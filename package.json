@@ -1,0 +1,26 @@
+{
+  "name": "crypto-almanac-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "@argent/get-starknet": "^3.5.0",
+    "axios": "^0.22.0",
+    "ethers": "^5.6.8",
+    "moment": "^2.29.3",
+    "starknet": "^3.12.1",
+    "vue": "^3.2.33",
+    "vue-router": "^4.0.0-0",
+    "vue3-touch-events": "^4.1.0",
+    "vuex": "^4.0.0-0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-router": "^5.0.4",
+    "@vue/cli-plugin-vuex": "^5.0.4",
+    "@vue/cli-service": "^5.0.4",
+    "@vue/compiler-sfc": "^3.0.0"
+  }
+}
