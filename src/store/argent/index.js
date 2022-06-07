@@ -25,8 +25,15 @@ const state = () => ({
   almanacMaxMarket: '',
   almanacAllowedMarkets: [],
 
+  almanacs: [],
   userAlmanacs: [],
-  loadingAlmanacs: true,
+  filteredAlmanacs: [],
+  loadingAlmanacs: false,
+
+  filter: {
+    onlyUser: true,
+    page: 0
+  },
 
   startDate: new Date(2009,0,1),
 
@@ -47,7 +54,6 @@ const state = () => ({
 
   markets: null,
   serverError: false,
-
 });
 
 export default {

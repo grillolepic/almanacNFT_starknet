@@ -3,16 +3,19 @@
     <div id="title">gallery</div>
     <div id="explain">your AlmAnAc nfts</div>
 
-    <div id="loadingMessage" v-if="argent.loadingAlmanacs || argent.userAlmanacs.length ==0">
-        <div class="message" v-if="argent.loadingAlmanacs">Loading your Almanac NFTs...</div>
-        <div class="message" v-else>You don't seem to own any Almanac NFT</div>
+    <div id="loadingMessage" v-if="argent.loadingAlmanacs || argent.almanacs.length == 0">
+        <div class="message" v-if="argent.loadingAlmanacs">Loading Almanac NFTs...</div>
+        <div class="messageContainer" v-else>
+            <div class="message">No almanacs minted</div>
+            <router-link :to="'/mint'"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link>
+        </div>
     </div>
     <div id="nftContainer" v-else>
-        <div v-for="(nft, index) in argent.userAlmanacs" :key="index">
+        <div v-for="(nft, index) in argent.filteredAlmanacs" :key="index">
             <div class="containNft">
-                <div class="almanacNft" @click="goToLink(argent.userAlmanacs[index].animation_url)"  :style="almanacStyle(index)"></div>
-                <div class="almanacName">{{argent.userAlmanacs[index].name}}</div>
-                <div class="almanacDescription">{{argent.userAlmanacs[index].description}}</div>
+                <div class="almanacNft" @click="goToLink(`https://server.almanacNFT.xyz/almanac/nfts/${argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/video/${argent.filteredAlmanacs[index].id}`)" :style="almanacStyle(index)"></div>
+                <div class="almanacName">{{argent.filteredAlmanacs[index].name}}</div>
+                <div class="almanacDescription">{{argent.filteredAlmanacs[index].description}}</div>
             </div>
         </div>
     </div>
@@ -33,7 +36,7 @@ export default {
   methods: {
     ...mapActions('argent', []),
     almanacStyle: function(index) {
-      let style = `background-image: url("${this.argent.userAlmanacs[index].image}");`;
+      let style = `background-image: url("https://server.almanacNFT.xyz/almanac/nfts/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/image/${this.argent.filteredAlmanacs[index].id}");`;
       return style;
     },
     goToLink(link) {
@@ -88,8 +91,23 @@ export default {
         letter-spacing: 1px;
     }
 
+        .messageContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .message {
+            margin-bottom: 50px;
+        }
+
+        #mintNowButton {
             margin-bottom: 100px;
+            height: 40px;
+            width: 400px;
+            font-size: 32px;
+            line-height: 40px;
+            font-family: 'Major Mono Display', monospace;
         }
 
     .containNft {

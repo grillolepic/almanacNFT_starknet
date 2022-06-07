@@ -12,6 +12,15 @@ let COST = 0;
 let BALANCE = 0;
 let ALLOWANCE = 0;
 
+let ALL_ALMANACS = [];
+let USER_ALMANACS = [];
+let FILTERED_ALMANACS = [];
+
+let FILTER = {
+    onlyUser: true,
+    page: 0
+}
+
 const supportedNetworks = ["goerli-alpha"]; //, "mainnet-alpha"];
 
 const MAINNET_ETHER_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
@@ -50,7 +59,25 @@ async function getMarkets(context) {
       context.commit('markets', []);
       context.commit('serverError', true);
     }
-  }
+}
+
+async function downloadAlmanacs(context) {
+    console.log("downloadAlmanacs()");
+    context.commit('loadingAlmanacs', true);
+    let PAGE_SIZE = 1000;
+    ALL_ALMANACS = [];
+
+    for (let i=0; i<10; i++) {
+        console.log(i);
+        let almanacsReq = await axios.get(`https://server.almanacnft.xyz/almanac/getAll/${(NETWORK_NAME == 'mainnet-alpha')?'starknet':'starknet_goerli'}/${i}`);
+        ALL_ALMANACS = ALL_ALMANACS.concat(almanacsReq.data);
+        if (almanacsReq.data.length < PAGE_SIZE) { break; }
+    }
+
+    context.commit('almanacs', ALL_ALMANACS);
+    filterAlmanacs(context);
+    context.commit('loadingAlmanacs', false);
+}
 
 const init = async function (context) {
     await getMarkets(context);
@@ -70,6 +97,16 @@ const startDate = function (context) {
         daysSince: currentDaysSince,
         market: 0
     });
+}
+
+const filterAlmanacs = function (context, settings) {
+    console.log("filterAlmanacs()");
+    FILTERED_ALMANACS = ALL_ALMANACS.concat([]);
+    console.log(FILTERED_ALMANACS);
+    console.log(USER_ALMANACS);
+    FILTERED_ALMANACS = FILTERED_ALMANACS.filter((x) => (FILTER.onlyUser)?(USER_ALMANACS.includes(x.id)):true);
+
+    context.commit('filteredAlmanacs', FILTERED_ALMANACS);
 }
 
 const connectArgentX = async function (context) {
@@ -136,10 +173,13 @@ const login = async function (context) {
 
             resetCurrentAlmanac(context);
             resetTransaction(context);
+
+            loadUserAlmanacs(context);
+            downloadAlmanacs(context);
+
             await updateCost(context);
             await updateTotalSupply(context);
             await updateBalance(context);
-            await loadUserAlmanacs(context);
         }
 
         context.commit('initialLoading', false);
@@ -260,20 +300,22 @@ const logout = async function (context) {
 }
 
 async function loadUserAlmanacs(context) {
-if (!STARKNET) { return null; }
+    if (!STARKNET) { return null; }
+    console.log("Loading User Almanacs...");
 
-context.commit("loadingAlmanacs", true);
-console.log("Loading Almanacs...");
+    let response = await ALMANAC_CONTRACT.balanceOf(ADDRESS);
+    let numberOfAlmanacs = uint256.uint256ToBN(response.balance).toNumber();
 
-userAlmanacs = await axios.get(`https://server.almanacnft.xyz/almanac/userAlmanacs/${(NETWORK_NAME == 'mainnet-alpha')?'starknet':'starknet_goerli'}/${ADDRESS}`);
-
-if (userAlmanacs.status == 200) {
-    userAlmanacs = userAlmanacs.data;
-}
-
-console.log(userAlmanacs);
-context.commit("userAlmanacs", userAlmanacs);
-context.commit("loadingAlmanacs", false);
+    for (let i=0; i<numberOfAlmanacs; i++) {
+        let idx = uint256.bnToUint256(number.toBN(i));
+        let response2 = await ALMANAC_CONTRACT.tokenOfOwnerByIndex(ADDRESS, idx);
+        let id = uint256.uint256ToBN(response2.tokenId).toNumber();
+        if (!USER_ALMANACS.includes(id)) {
+            USER_ALMANACS.push(id);
+            context.commit("userAlmanacs", USER_ALMANACS);
+            filterAlmanacs(context)
+        }
+    }
 }
 
 const setAlmanac = async function setAlmanac(context, almanacConfig) {
@@ -385,10 +427,12 @@ export default {
     connectArgentX,
 
     approveEther,
-    
+       
     setAlmanac,
     mintAlmanac,
     
+    filterAlmanacs,
+
     resetCurrentAlmanac,
     resetTransaction
 }

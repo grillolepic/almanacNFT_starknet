@@ -67,14 +67,30 @@ export default {
 
 
 
-
-  
+    almanacs: function (state, value) {
+      state.almanacs = value;
+    },
     userAlmanacs: function (state, value) {
       state.userAlmanacs = value;
+    },
+    filteredAlmanacs: function (state, value) {
+      state.filteredAlmanacs = value;
     },
     loadingAlmanacs: function (state, value) {
       state.loadingAlmanacs = value;
     },
+
+
+    filterOnlyUser: function (state, value) {
+      state.filter.onlyUser = value;
+    },
+    filterPage: function (state, value) {
+      state.filter.page = value;
+    },
+
+
+
+
   
     
     almanacDaysSince: function (state, value) {
