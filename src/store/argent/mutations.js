@@ -130,6 +130,9 @@ export default {
     transactionError: function (state, value) {
       state.transaction.error = value;
     },
+    transactionIsApprove: function (state, value) {
+      state.transaction.isApprove = value;
+    },
   
 
     markets: function (state, value) {

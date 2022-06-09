@@ -54,6 +54,7 @@ const state = () => ({
     status: null,
     link: null,
     error: null,
+    isApprove: false
   },
 
   markets: null,

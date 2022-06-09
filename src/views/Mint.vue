@@ -92,7 +92,8 @@
             <div id="txLink" v-if="argent.transaction.link != null"  @click="goToLink(argent.transaction.link)">view transaction on voyager</div>
             <div id="txError" v-if="argent.transaction.error != null">{{argent.transaction.error.toLowerCase()}}</div>
             <div v-if="argent.transaction.status == 2">
-              <div id="txGallery">Your Almanac will soon be ready.<br>Check it out on the Gallery!</div>
+              <div id="txGallery" v-if="argent.transaction.isApprove">ETH approved</div>
+              <div id="txGallery" v-else>Your Almanac will be created shortly.<br>Look for it in the Gallery!</div>
             </div>
             <div v-if="argent.transaction.status == -1 || argent.transaction.status == 2">
               <div id="goBack" class="button noSelect" @click="resetUI()">back</div>

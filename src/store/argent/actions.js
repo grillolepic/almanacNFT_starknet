@@ -301,6 +301,7 @@ const approveEther = async function(context) {
     if (!STARKNET) { return null; }
     try {
         context.commit('transactionStatus', 0);
+        context.commit('transactionIsApprove', true);
         const result = await ETHER_CONTRACT.approve((NETWORK_NAME == 'mainnet-alpha')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS, uint256.bnToUint256(uint256.UINT_256_MAX));
         context.commit("transactionLink", `Transaction hash: ${result.transaction_hash}`);
         context.commit('transactionStatus', 1);
@@ -423,7 +424,8 @@ const setAlmanac = async function setAlmanac(context, almanacConfig) {
   
 async function mintAlmanac(context) {
     context.commit('transactionStatus', 0);
-
+    context.commit('transactionIsApprove', false);
+    
     try {
         await updateCost(context);
         let result = await ALMANAC_CONTRACT.publicMint({'market': almanacMarket, 'day': almanacDaysSince});
