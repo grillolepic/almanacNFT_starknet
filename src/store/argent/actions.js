@@ -12,14 +12,21 @@ let COST = 0;
 let BALANCE = 0;
 let ALLOWANCE = 0;
 
+let MARKETS = [];
+
 let ALL_ALMANACS = [];
 let USER_ALMANACS = [];
 let FILTERED_ALMANACS = [];
 
 let FILTER = {
-    onlyUser: true,
-    page: 0
+    onlyUser: false,
+    market: null,
+    milestone: null,
+    page: 0,
+    sortBy: 'id'
 }
+
+const PAGE_SIZE = 30;
 
 const supportedNetworks = ["goerli-alpha"]; //, "mainnet-alpha"];
 
@@ -28,8 +35,8 @@ const GOERLI_ETHER_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b
 const ETHER_ABI = require('./Ether.json');
 let ETHER_CONTRACT = null;
 
-const MAINNET_ALMANAC_ADDRESS = "0x07fb5a16fa38a31e5ca186fbca7a3142e1a6eaf7e384dc7d9470a1f722e36ed7";
-const GOERLI_ALMANAC_ADDRESS = "0x07fb5a16fa38a31e5ca186fbca7a3142e1a6eaf7e384dc7d9470a1f722e36ed7";
+const MAINNET_ALMANAC_ADDRESS = "0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a";
+const GOERLI_ALMANAC_ADDRESS = "0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a";
 const ALMANAC_ABI = require('./Almanac.json');
 let ALMANAC_CONTRACT = null;
 
@@ -51,7 +58,9 @@ async function getMarkets(context) {
     console.log("getMarkets()");
     try {
       let marketsReq = await axios.get(`https://server.almanacnft.xyz/almanac/markets`);
-      context.commit('markets', marketsReq.data);
+      MARKETS = marketsReq.data
+      console.log(MARKETS);
+      context.commit('markets', MARKETS);
       context.commit('serverError', false);
     } catch (err) {
       console.log(" - Couldn't fetch markets!");
@@ -81,6 +90,7 @@ async function downloadAlmanacs(context) {
 
 const init = async function (context) {
     await getMarkets(context);
+    await downloadAlmanacs(context);
     STARKNET = await connect({ showList: false })
     await STARKNET?.enable();
     if (STARKNET?.isConnected) {
@@ -99,19 +109,48 @@ const startDate = function (context) {
     });
 }
 
-const filterAlmanacs = function (context, settings) {
+const filterAlmanacs = function (context, settings = {}) {
     console.log("filterAlmanacs()");
+
+    if ("onlyUser" in settings) { FILTER.onlyUser = settings.onlyUser; }
+    if ("market" in settings) { FILTER.market = settings.market; }
+    if ("milestone" in settings) { FILTER.milestone = settings.milestone; }
+    if ("page" in settings) { FILTER.page = settings.page; }
+    if ("sortBy" in settings) { FILTER.sortBy = settings.sortBy; }
+
     FILTERED_ALMANACS = ALL_ALMANACS.concat([]);
-    console.log(FILTERED_ALMANACS);
-    console.log(USER_ALMANACS);
     FILTERED_ALMANACS = FILTERED_ALMANACS.filter((x) => (FILTER.onlyUser)?(USER_ALMANACS.includes(x.id)):true);
+    FILTERED_ALMANACS = FILTERED_ALMANACS.filter((x) => (FILTER.market != null)?(x.market ==FILTER.market):true);
+    FILTERED_ALMANACS = FILTERED_ALMANACS.filter((x) => (FILTER.milestone != null)?(FILTER.milestone?(x.id <= 1000):(x.id > 1000)):true);
+
+    if (FILTER.sortBy == 'id') {
+        FILTERED_ALMANACS.sort((a,b) => a.id - b.id);
+    } else if (FILTER.sortBy == 'day_up') {
+        FILTERED_ALMANACS.sort((a,b) => a.timestamp - b.timestamp);
+    } else if (FILTER.sortBy == 'day_down') {
+        FILTERED_ALMANACS.sort((a,b) => b.timestamp - a.timestamp);
+    } else if (FILTER.sortBy == 'change_up') {
+        FILTERED_ALMANACS.sort((a,b) => a.change - b.change);
+    } else if (FILTER.sortBy == 'change_down') {
+        FILTERED_ALMANACS.sort((a,b) => b.change - a.change);
+    }
+
+    if (FILTERED_ALMANACS.length > PAGE_SIZE) {
+
+    }
+
+    context.commit('filterOnlyUser', FILTER.onlyUser);
+    context.commit('filterMarket', FILTER.market);
+    context.commit('filterMilestone', FILTER.milestone);
+    context.commit('filterPage', FILTER.page);
+    context.commit('filterSortBy', FILTER.sortBy);
 
     context.commit('filteredAlmanacs', FILTERED_ALMANACS);
 }
 
 const connectArgentX = async function (context) {
     STARKNET = await connect({
-        include: ["argentX"],
+        //include: ["argentX"],
         modalOptions: {theme: 'dark'}
     });
     await STARKNET?.enable()
@@ -302,20 +341,34 @@ const logout = async function (context) {
 async function loadUserAlmanacs(context) {
     if (!STARKNET) { return null; }
     console.log("Loading User Almanacs...");
+    context.commit("loadingUserAlmanacs", true);
 
-    let response = await ALMANAC_CONTRACT.balanceOf(ADDRESS);
-    let numberOfAlmanacs = uint256.uint256ToBN(response.balance).toNumber();
+    USER_ALMANACS = [];
+    context.commit("userAlmanacs", USER_ALMANACS);
 
-    for (let i=0; i<numberOfAlmanacs; i++) {
-        let idx = uint256.bnToUint256(number.toBN(i));
-        let response2 = await ALMANAC_CONTRACT.tokenOfOwnerByIndex(ADDRESS, idx);
-        let id = uint256.uint256ToBN(response2.tokenId).toNumber();
-        if (!USER_ALMANACS.includes(id)) {
-            USER_ALMANACS.push(id);
-            context.commit("userAlmanacs", USER_ALMANACS);
-            filterAlmanacs(context)
+    try {
+        let almanacsReq = await axios.get(`https://api-testnet.aspect.co/assets?owner_address=${ADDRESS}&contract_address=${(NETWORK_NAME == 'mainnet-alpha')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS}`);
+        for (let i=0; i<almanacsReq.data.length; i++) {
+            USER_ALMANACS.push(parseInt(almanacsReq.data[i].token_id));
+        }
+    } catch (err) {
+        let response = await ALMANAC_CONTRACT.balanceOf(ADDRESS);
+        let numberOfAlmanacs = uint256.uint256ToBN(response.balance).toNumber();
+    
+        for (let i=0; i<numberOfAlmanacs; i++) {
+            let idx = uint256.bnToUint256(number.toBN(i));
+            let response2 = await ALMANAC_CONTRACT.tokenOfOwnerByIndex(ADDRESS, idx);
+            let id = uint256.uint256ToBN(response2.tokenId).toNumber();
+            if (!USER_ALMANACS.includes(id)) {
+                USER_ALMANACS.push(id);
+                context.commit("userAlmanacs", USER_ALMANACS);
+                filterAlmanacs(context)
+            }
         }
     }
+
+    context.commit("userAlmanacs", USER_ALMANACS);
+    context.commit("loadingUserAlmanacs", false);
 }
 
 const setAlmanac = async function setAlmanac(context, almanacConfig) {

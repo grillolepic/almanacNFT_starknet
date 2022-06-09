@@ -79,20 +79,28 @@ export default {
     loadingAlmanacs: function (state, value) {
       state.loadingAlmanacs = value;
     },
+    loadingUserAlmanacs: function (state, value) {
+      state.loadingUserAlmanacs = value;
+    },
 
 
     filterOnlyUser: function (state, value) {
       state.filter.onlyUser = value;
     },
+    filterMarket: function (state, value) {
+      state.filter.market = value;
+    },
+    filterMilestone: function (state, value) {
+      state.filter.milestone = value;
+    },
     filterPage: function (state, value) {
       state.filter.page = value;
     },
+    filterSortBy: function (state, value) {
+      state.filter.sortBy = value;
+    },
 
 
-
-
-  
-    
     almanacDaysSince: function (state, value) {
       state.almanac.daysSince = value;
     },

@@ -116,7 +116,7 @@
                 "type": "felt"
             },
             {
-                "name": "vrf",
+                "name": "vrfProvider",
                 "type": "felt"
             }
         ],
@@ -320,7 +320,7 @@
                 "type": "Uint256"
             }
         ],
-        "name": "tokenUri",
+        "name": "tokenURI",
         "outputs": [
             {
                 "name": "result",
@@ -337,7 +337,7 @@
                 "type": "felt"
             }
         ],
-        "name": "setBaseUri",
+        "name": "setBaseURI",
         "outputs": [],
         "type": "function"
     },
@@ -407,20 +407,9 @@
             {
                 "name": "almanac",
                 "type": "AlmanacMarketDay"
-            }
-        ],
-        "name": "milestoneMint",
-        "outputs": [],
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "name": "milestoneId",
-                "type": "Uint256"
             },
             {
-                "name": "targetAddress",
+                "name": "address",
                 "type": "felt"
             }
         ],
@@ -431,8 +420,8 @@
     {
         "inputs": [
             {
-                "name": "milestoneId",
-                "type": "Uint256"
+                "name": "almanac",
+                "type": "AlmanacMarketDay"
             }
         ],
         "name": "startShuffle",
@@ -440,14 +429,33 @@
         "type": "function"
     },
     {
-        "inputs": [
+        "inputs": [],
+        "name": "finishShuffle",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getShufflingId",
+        "outputs": [
             {
                 "name": "milestoneId",
                 "type": "Uint256"
             }
         ],
-        "name": "finishShuffle",
-        "outputs": [],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getShufflingMilestone",
+        "outputs": [
+            {
+                "name": "milestone",
+                "type": "AlmanacMarketDay"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -636,6 +644,57 @@
         "inputs": [],
         "name": "withdraw",
         "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "newWithdrawAddress",
+                "type": "felt"
+            },
+            {
+                "name": "fix",
+                "type": "felt"
+            }
+        ],
+        "name": "setWithdrawAddress",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getWithdrawAddress",
+        "outputs": [
+            {
+                "name": "withdrawAddress",
+                "type": "felt"
+            },
+            {
+                "name": "fixed",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "almanacId",
+                "type": "Uint256"
+            }
+        ],
+        "name": "almanacExists",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            },
+            {
+                "name": "isMilestone",
+                "type": "felt"
+            }
+        ],
         "type": "function"
     }
 ]

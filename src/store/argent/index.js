@@ -29,10 +29,14 @@ const state = () => ({
   userAlmanacs: [],
   filteredAlmanacs: [],
   loadingAlmanacs: false,
+  loadingUserAlmanacs: false,
 
   filter: {
-    onlyUser: true,
-    page: 0
+    onlyUser: false,
+    market: null,
+    milestone: null,
+    page: 0,
+    sortBy: 'id'
   },
 
   startDate: new Date(2009,0,1),
