@@ -48,6 +48,11 @@
                 </div>
             </div>
         </div>
+        <div id="pagesContainer">
+            <div :class="{'disabledPage': argent.filter.page == 0 }" class=" pageLabel noSelect" @click="changePage('prev')">&lt;</div>
+            <div class="currentPageNumber noSelect">{{argent.filter.page+1}}</div>
+            <div :class="{'disabledPage': argent.filter.page == argent.galleryPages }" class="pageLabel noSelect" @click="changePage('next')">&gt;</div>
+        </div>
     </div>
   </div>
 </template>
@@ -87,6 +92,20 @@ export default {
             this.filterAlmanacs({ sortBy: 'change_down'});
         } else {
             this.filterAlmanacs({ sortBy: 'id'});
+        }
+    },
+
+    changePage(target) {
+        if (target == 'prev') {
+            if (this.argent.filter.page > 0) {
+                this.filterAlmanacs({ page: this.argent.filter.page - 1 })
+            }
+        } else if (target == 'next') {
+            if (this.argent.filter.page != this.argent.galleryPages) {
+                this.filterAlmanacs({ page: this.argent.filter.page + 1 })
+            }
+        } else {
+            this.filterAlmanacs({ page: parseInt(this.argent.filter.page) })
         }
     },
 
@@ -194,7 +213,6 @@ export default {
             font-family: 'Major Mono Display', monospace;
         }
 
-
     #galleryContainer {
         margin-top: 30px;
         margin-bottom: 80px;
@@ -292,8 +310,8 @@ export default {
             flex-direction: row;
             flex-wrap: wrap;
             align-content: flex-start;
-            justify-content: flex-start;
             align-items: flex-start;
+            justify-content: space-evenly;
         }
 
         .containNft {
@@ -335,8 +353,35 @@ export default {
                 letter-spacing: 1px;
             }
 
+        #pagesContainer {
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            width: 100%;
+            color: white;
+        }
+            .pageLabel {
+                cursor: pointer;
+                margin-right: 20px;
+                margin-left: 20px;
+                text-align: center;
+                font-family: 'Major Mono Display', monospace;
+                font-size: 36px;
+            }
 
+            .currentPageNumber {
+                margin-right: 20px;
+                margin-left: 20px;
+                text-align: center;
+                font-family: 'Major Mono Display', monospace;
+                font-size: 36px;
+            }
 
+            .disabledPage {
+                color: grey;
+                cursor: default;
+            }
 
     @media only screen and (max-width: 549px) {
 

@@ -31,6 +31,8 @@ const state = () => ({
   loadingAlmanacs: false,
   loadingUserAlmanacs: false,
 
+  galleryPages: 0,
+
   filter: {
     onlyUser: false,
     market: null,

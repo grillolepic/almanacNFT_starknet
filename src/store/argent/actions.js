@@ -26,7 +26,7 @@ let FILTER = {
     sortBy: 'id'
 }
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 12;
 
 const supportedNetworks = ["goerli-alpha"]; //, "mainnet-alpha"];
 
@@ -135,10 +135,13 @@ const filterAlmanacs = function (context, settings = {}) {
         FILTERED_ALMANACS.sort((a,b) => b.change - a.change);
     }
 
-    if (FILTERED_ALMANACS.length > PAGE_SIZE) {
+    let totalPages = Math.ceil(FILTERED_ALMANACS.length/PAGE_SIZE) - 1;
 
+    if (FILTERED_ALMANACS.length > PAGE_SIZE) {
+        FILTERED_ALMANACS = FILTERED_ALMANACS.slice(FILTER.page * PAGE_SIZE, (FILTER.page * PAGE_SIZE) + 12);
     }
 
+    context.commit('galleryPages', totalPages);
     context.commit('filterOnlyUser', FILTER.onlyUser);
     context.commit('filterMarket', FILTER.market);
     context.commit('filterMilestone', FILTER.milestone);

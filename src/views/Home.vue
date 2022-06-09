@@ -51,7 +51,7 @@
     #logo {
       width: 900px;
       max-width: 90%;
-      height: 200px;
+      height: 176px;
       background-size: contain;
       background-position: center;
       background-repeat: no-repeat;

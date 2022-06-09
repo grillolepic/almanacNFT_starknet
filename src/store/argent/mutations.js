@@ -84,6 +84,11 @@ export default {
     },
 
 
+    galleryPages: function (state, value) {
+      state.galleryPages = value;
+    },
+
+
     filterOnlyUser: function (state, value) {
       state.filter.onlyUser = value;
     },
