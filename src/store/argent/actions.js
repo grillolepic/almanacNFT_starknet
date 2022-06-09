@@ -436,7 +436,10 @@ async function mintAlmanac(context) {
         context.commit('almanacAvailable', false);
         await updateBalance(context);
         await axios.get(`https://server.almanacnft.xyz/almanac/updateStarknet`);
-        setTimeout(() => loadUserAlmanacs(context), 2000 * 60);
+        setTimeout(() => {
+            downloadAlmanacs(context);
+            loadUserAlmanacs(context);
+        }, 2000 * 60);
     } catch (err) {
         console.log(err);
         context.commit('transactionError', "Unknown error");
