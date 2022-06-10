@@ -118,6 +118,9 @@ export default {
     almanacDataAvailable: function (state, value) {
       state.almanac.dataAvailable = value;
     },
+    almanacWaitingInput: function (state, value) {
+      state.almanac.waitingInput = value;
+    },
     almanacQueryingAvailable: function (state, value) {
       state.almanac.queryingNftAvailable = value;
     },

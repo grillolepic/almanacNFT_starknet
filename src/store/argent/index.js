@@ -48,6 +48,7 @@ const state = () => ({
     market: 0,
     nftAvailable: false,
     dataAvailable: false,
+    waitingInput: false,
     queryingNftAvailable: false,
     queryingDataAvailable: false,
   },

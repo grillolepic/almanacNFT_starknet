@@ -34,7 +34,7 @@
             <div id="instructions">Choose the market and the date of your Almanac NFT</div>
 
             <div class="label">Market</div>
-            <div id="MarketSelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable}" @click="showSelect(true, 'market')">
+            <div id="MarketSelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput}" @click="showSelect(true, 'market')">
               <div id="marketIcon" class="noSelect" :style="selectMarketIconStyle"></div>
               <span class="noSelect">{{argent.markets[argent.almanac.market].name}}</span>
             </div>
@@ -44,19 +44,19 @@
             <div id="DateSelect">
               <div class="datePart">
                 <div class="dateLabel">Day</div>
-                <div id="daySelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable}" @click="showSelect(true, 'day')">
+                <div id="daySelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput}" @click="showSelect(true, 'day')">
                   <span>{{selectedDate}}</span>
                 </div>
               </div>
               <div class="datePart">
                 <div class="dateLabel">Month</div>
-                  <div id="monthSelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable}" @click="showSelect(true, 'month')">
+                  <div id="monthSelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput}" @click="showSelect(true, 'month')">
                     <span>{{selectedMonth}}</span>
                 </div>
               </div>
               <div class="datePart">
                 <div class="dateLabel">Year</div>
-                  <div id="yearSelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable}" @click="showSelect(true, 'year')">
+                  <div id="yearSelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput}" @click="showSelect(true, 'year')">
                     <span>{{selectedYear}}</span>
                 </div>
               </div>
@@ -65,16 +65,16 @@
             <div class="separator"></div>
 
             <div class="checker">
-              <div class="checkerStatus" :class="{'unavailable': (!argent.almanac.queryingNftAvailable && !argent.almanac.nftAvailable), 'querying': (argent.almanac.queryingNftAvailable)}"></div>
+              <div class="checkerStatus" :class="{'unavailable': (!argent.almanac.queryingNftAvailable && !argent.almanac.nftAvailable && !argent.almanac.waitingInput), 'querying': (argent.almanac.queryingNftAvailable && !argent.almanac.waitingInput), 'waiting': (argent.almanac.waitingInput)}"></div>
               <div class="checkerInfo">nft available</div>
             </div>
             <div class="checker">
-              <div class="checkerStatus" :class="{'unavailable': (!argent.almanac.queryingDataAvailable && !argent.almanac.dataAvailable), 'querying': (argent.almanac.queryingDataAvailable)}"></div>
+              <div class="checkerStatus" :class="{'unavailable': (!argent.almanac.queryingDataAvailable && !argent.almanac.dataAvailable && !argent.almanac.waitingInput), 'querying': (argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput), 'waiting': (argent.almanac.waitingInput)}"></div>
               <div class="checkerInfo">data available</div>
             </div>
 
-            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable)}" @click="mint" v-if="argent.allowanceOk">mint</div>
-            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable)}" @click="approveEther" v-else>approve</div>
+            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable && !argent.almanac.waitingInput), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable || argent.almanac.waitingInput)}" @click="mint" v-if="argent.allowanceOk">mint</div>
+            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable && !argent.almanac.waitingInput), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable || argent.almanac.waitingInput)}" @click="approveEther" v-else>approve</div>
 
 
             <div id="infoMessage">
@@ -153,7 +153,7 @@ export default {
   mounted: function() {},
   components: {},
   methods: {
-    ...mapActions('argent', ['connectArgentX', 'setAlmanac', 'approveEther', 'mintAlmanac', 'resetTransaction']),
+    ...mapActions('argent', ['connectArgentX', 'resetDelay', 'setAlmanac', 'approveEther', 'mintAlmanac', 'resetTransaction']),
 
     connect: function() {
       this.init(true);
@@ -164,9 +164,10 @@ export default {
     },
 
     showSelect: function (visible, section = "market") {
-      if (!this.argent.almanac.queryingDataAvailable || !visible) {
+      if (!this.argent.almanac.queryingDataAvailable || !visible || this.argent.almanac.waitingInput) {
         this.selectOpen = visible;
         if (visible) {
+          this.resetDelay();
           this.selectType = section;
 
           if (section == "market") {
@@ -232,6 +233,8 @@ export default {
               }
             }
           }
+        } else {
+          this.setAlmanac({});
         }
       }
     },
@@ -270,15 +273,13 @@ export default {
         console.log("MIN DATE: " + minDate.format());
 
         if (minDate.isAfter(selectedDate)) {
-
           console.log("CHANGING DATE AND MARKET");
-
           this.setAlmanac({
             market: index,
             daysSince: minDate.diff(startingDate, 'days')
           });
         } else {
-           console.log("CHANGING MARKET");
+          console.log("CHANGING MARKET");
           this.setAlmanac({
             market: index
           });
@@ -305,11 +306,11 @@ export default {
         });
       }
 
-      this.showSelect(false);
+      this.selectOpen = false;
     },
 
     mint: function() {
-      if (this.argent.almanac.nftAvailable && this.argent.almanac.dataAvailable) {
+      if (this.argent.almanac.nftAvailable && this.argent.almanac.dataAvailable && !this.argent.almanac.waitingInput) {
         this.mintAlmanac();
         window.scrollTo(0, 0);
       }
@@ -559,6 +560,12 @@ export default {
       box-shadow: 1px 1px 10px rgb(0 255 0 / 44%);
       transition: box-shadow 0.25s;
       margin-right: 20px;
+    }
+
+    .waiting {
+      background-image: linear-gradient(45deg, #ededed, #dfdfdf);;
+      box-shadow: 1px 1px 10px rgb(255 255 0 / 44%);
+      transition: box-shadow 0.25s;
     }
 
     .querying {
