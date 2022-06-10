@@ -26,7 +26,7 @@
     </div>
     <div id="galleryContainer" v-else>
         <div id="settings">
-            <div class="filterOption">
+            <div class="filterOption" v-if="argent.connected && argent.address && argent.networkOk">
                 <div class="filterTitle">Owned by:</div>
                 <div class="filterShow noSelect" @click="switchOwner()">{{(argent.filter.onlyUser)?'me':'show all'}}</div>
             </div>

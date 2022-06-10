@@ -21,7 +21,7 @@
       <!-- In the future, simply remove this v-if -->
       <div v-if="argent.networkName == 'mainnet-alpha'">
         <div id="almanacConfig">
-          <div id="instructions" style="margin-top:50px;">AlmanacNFT is not yet ready for Starknet Mainnet, but you can switch to Starknet Göerli Testnet to try it out before release.</div>
+          <div id="instructions" style="margin-top:50px;">AlmanacNFT is not yet ready for Starknet Mainnet, but you can switch to Starknet Görli Testnet to try it out before release.</div>
         </div>
       </div>
 
@@ -122,7 +122,7 @@
         <div v-else>
           <div v-if="argent.connected">
             <div id="almanacConfig">
-              <div id="instructions" style="margin-top:50px;">AlmanacNFT is currently running only on the StarknNet Göerli Testnet.</div>
+              <div id="instructions" style="margin-top:50px;">AlmanacNFT is currently running only on the StarknNet Görli Testnet.</div>
             </div>
           </div>
           <div id="almanacConfig" v-else>

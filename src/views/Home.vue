@@ -22,6 +22,12 @@
         </div>
       </div>
       <router-link :to="'/mint'"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link>
+
+      <div id="tradeOn">
+          <div class="tradeOnText">trade on</div>
+          <a href="https://testnet.aspect.co/collection/0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a"><div class="aspectLogo"></div></a>
+      </div>
+
     </div>
   </div>
 </template>
@@ -123,7 +129,7 @@
 
     #mintNowButton {
       margin-top: 100px;
-      margin-bottom: 100px;
+      margin-bottom: 70px;
       height: 40px;
       width: 400px;
       font-size: 32px;
@@ -131,7 +137,32 @@
       font-family: 'Major Mono Display', monospace;
     }
 
+  #tradeOn {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .tradeOnText {
+    color: white;
+    font-family: 'Major Mono Display', monospace;
+    margin-right: 20px;
+  }
+
+  .aspectLogo {
+    width: 130px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url('/public/img/aspect.png');
+  }
+
   @media only screen and (max-width: 999px) and (min-width: 550px) {
+
     #exampleContainer {
       width: 700px;
     }
@@ -156,6 +187,10 @@
           line-height: 35px;
           margin: 20px;
         }
+    
+    .starknetLogo {
+          width: 230px;
+    }
   }
 
 
@@ -205,5 +240,19 @@
       font-size: 18px;
       line-height: 32px;
     }
+
+    .starknetLogo {
+          width: 270px;
+    }
+
+  .tradeOnText {
+    font-size: 12px;
+    margin-right: 20px;
+  }
+
+  .aspectLogo {
+    width: 80px;
+    height: 30px;
+  }
   }
 </style>
