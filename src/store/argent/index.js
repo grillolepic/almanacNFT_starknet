@@ -9,7 +9,6 @@ const state = () => ({
   networkOk: false,
   address: '',
   balance: null,
-  allowance: null,
 
   initialLoading: true,
 
@@ -20,7 +19,6 @@ const state = () => ({
 
   cost: '',
   costOk: false,
-  allowanceOk: false,
   
   almanacMaxMarket: '',
   almanacAllowedMarkets: [],
@@ -56,8 +54,7 @@ const state = () => ({
   transaction: {
     status: null,
     link: null,
-    error: null,
-    isApprove: false
+    error: null
   },
 
   markets: null,

@@ -73,8 +73,7 @@
               <div class="checkerInfo">data available</div>
             </div>
 
-            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable && !argent.almanac.waitingInput), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable || argent.almanac.waitingInput)}" @click="mint" v-if="argent.allowanceOk">mint</div>
-            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable && !argent.almanac.waitingInput), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable || argent.almanac.waitingInput)}" @click="approveEther" v-else>approve</div>
+            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable && !argent.almanac.waitingInput), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable || argent.almanac.waitingInput)}" @click="mint">mint</div>
 
 
             <div id="infoMessage">
@@ -92,8 +91,7 @@
             <div id="txLink" v-if="argent.transaction.link != null"  @click="goToLink(argent.transaction.link)">view transaction on voyager</div>
             <div id="txError" v-if="argent.transaction.error != null">{{argent.transaction.error.toLowerCase()}}</div>
             <div v-if="argent.transaction.status == 2">
-              <div id="txGallery" v-if="argent.transaction.isApprove">ETH approved</div>
-              <div id="txGallery" v-else>Your Almanac will be created shortly.<br>Look for it in the Gallery!</div>
+              <div id="txGallery">Your Almanac will be created shortly.<br>Look for it in the Gallery!</div>
             </div>
             <div v-if="argent.transaction.status == -1 || argent.transaction.status == 2">
               <div id="goBack" class="button noSelect" @click="resetUI()">back</div>
@@ -153,7 +151,7 @@ export default {
   mounted: function() {},
   components: {},
   methods: {
-    ...mapActions('argent', ['connectArgentX', 'resetDelay', 'setAlmanac', 'approveEther', 'mintAlmanac', 'resetTransaction']),
+    ...mapActions('argent', ['connectArgentX', 'resetDelay', 'setAlmanac', 'mintAlmanac', 'resetTransaction']),
 
     connect: function() {
       this.init(true);

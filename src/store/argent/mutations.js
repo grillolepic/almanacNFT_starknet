@@ -20,9 +20,6 @@ export default {
     balance: function (state, value) {
       state.balance = value;
     },
-    allowance: function (state, value) {
-      state.allowance = value;
-    },
     
     initialLoading: function (state, value) {
       state.initialLoading = value;
@@ -48,10 +45,6 @@ export default {
     costOk: function (state, value) {
       state.costOk = value;
     },
-    allowanceOk: function (state, value) {
-      state.allowanceOk = value;
-    },
-
 
 
 
@@ -137,9 +130,6 @@ export default {
     },
     transactionError: function (state, value) {
       state.transaction.error = value;
-    },
-    transactionIsApprove: function (state, value) {
-      state.transaction.isApprove = value;
     },
   
 

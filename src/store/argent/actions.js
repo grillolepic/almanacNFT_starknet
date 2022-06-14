@@ -1,7 +1,7 @@
 const axios = require('axios').default;
 import moment from 'moment';
 import { connect, disconnect } from "@argent/get-starknet";
-import { Contract, number, uint256, validateAndParseAddress, shortString } from "starknet";
+import { Contract, Account, number, uint256, validateAndParseAddress, hash, ec, transaction } from "starknet";
 
 let INIT = false;
 let STARKNET = null;
@@ -9,8 +9,8 @@ let ADDRESS = null;
 let NETWORK_NAME = null;
 let NETWORK_OK= null;
 let COST = 0;
+let COST_BN = null;
 let BALANCE = 0;
-let ALLOWANCE = 0;
 
 let MARKETS = [];
 
@@ -30,6 +30,8 @@ const PAGE_SIZE = 12;
 
 const supportedNetworks = ["goerli-alpha"]; //, "mainnet-alpha"];
 
+const ARGENT_ABI = require('./ArgentAccount.json');
+
 const MAINNET_ETHER_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 const GOERLI_ETHER_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 const ETHER_ABI = require('./Ether.json');
@@ -47,7 +49,6 @@ const MAX_PUBLIC_SUPPLY = 9000;
 let supplyOk = false;
 
 let costOk = false;
-let allowanceOk = false;
 
 let LAST_ALMANAC_INPUT = { market: 0, daysSince: 0 };
 let ALMANAC_INPUT = { market: 0, daysSince: 0 };
@@ -194,6 +195,58 @@ const login = async function (context) {
         context.commit('address', ADDRESS);
         context.commit('networkOk', NETWORK_OK);
 
+        /*
+        ------------------ VERIFY SIGNATURES ------------------
+
+        let ARGENT_ACCOUNT = new Contract(
+            ARGENT_ABI,
+            ADDRESS,
+            STARKNET.provider
+        );
+        let response = await ARGENT_ACCOUNT.get_signer();
+        let pubKey = response.signer;
+        console.log(` - Got this public key from contract: ${number.toHex(pubKey)}`);
+        
+
+        //Frontend
+
+        let longString = "This is a very, very, very, very, very, very long string.";
+        let hashedMsg = number.toHex(hash.starknetKeccak(longString));
+        console.log(` - Hashed string is: ${hashedMsg}`);
+
+        let signableMessage = {
+            domain: {
+                name: "AlmanacNFT",
+                chainId: (NETWORK_NAME == 'mainnet-alpha') ? "SN_MAIN" : "SN_GOERLI",
+                version: "0.0.1",
+            },
+            types: {
+                StarkNetDomain: [
+                    { name: "name", type: "felt" },
+                    { name: "chainId", type: "felt" },
+                    { name: "version", type: "felt" },
+                ],
+                Message: [{ name: "msg", type: "felt" }],
+            },
+            primaryType: "Message",
+            message: {
+                msg: hashedMsg
+            }
+        };
+        let signature = await STARKNET.account.signMessage(signableMessage);
+        console.log(signature);
+
+        //Server side
+        const starkKeyPair = ec.genKeyPair();
+        const starkKeyPub = ec.getStarkKey(starkKeyPair);
+
+        let hashed = await await STARKNET.account.hashMessage(signableMessage);
+        console.log(hashed);
+
+        response = await ARGENT_ACCOUNT.is_valid_signature(hashed, signature);
+        console.log(` - is_valid returned: ${response.is_valid.toString()}`);
+        */
+
         if (!INIT) {
             STARKNET.on("accountsChanged", (accounts) => handleAccountsChanged(context, accounts));
             INIT = true;
@@ -241,15 +294,8 @@ async function updateBalance(context) {
     BALANCE = parseFloat(formatEther(response.balance));
     context.commit('balance', BALANCE);
 
-    console.log("Finding Ether allowance....");
-    response = await ETHER_CONTRACT.allowance(ADDRESS, (NETWORK_NAME == 'mainnet-alpha')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS);
-    ALLOWANCE = parseFloat(formatEther(response.remaining));
-    context.commit('allowance', ALLOWANCE);
-
     costOk = (COST <= BALANCE);
-    allowanceOk = (COST <= ALLOWANCE);
     context.commit('costOk', costOk);
-    context.commit('allowanceOk', allowanceOk);
 }
 
 async function updateTotalSupply(context) {
@@ -282,55 +328,33 @@ async function updateTotalSupply(context) {
 }
   
 async function updateCost(context) {
-    if (STARKNET) {
-        console.log("Finding Almanac cost....");
-        let response = await ALMANAC_CONTRACT.getCost();
-        COST = parseFloat(formatEther(response.cost));
-        context.commit('cost', COST);
-        costOk = (COST <= BALANCE);
-        allowanceOk = (COST <= ALLOWANCE);
-    } else {
-        context.commit('cost', null);
-        costOk = false;
-        allowanceOk = false;
-        ALLOWANCE = 0;
-        BALANCE = 0;
-    }
-    context.commit('costOk', costOk);
-    context.commit('allowanceOk', allowanceOk);
-}
-
-const approveEther = async function(context) {
-    if (!STARKNET) { return null; }
     try {
-        context.commit('transactionStatus', 0);
-        context.commit('transactionIsApprove', true);
-        const result = await ETHER_CONTRACT.approve((NETWORK_NAME == 'mainnet-alpha')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS, uint256.bnToUint256(uint256.UINT_256_MAX));
-        context.commit("transactionLink", `Transaction hash: ${result.transaction_hash}`);
-        context.commit('transactionStatus', 1);
-        await STARKNET.provider.waitForTransaction(result.transaction_hash);
-        context.commit('transactionStatus', 2);
-        updateBalance(context);
+        if (STARKNET) {
+            console.log("Finding Almanac cost....");
+            let response = await ALMANAC_CONTRACT.getCost();
+            COST_BN = response.cost;
+            COST = parseFloat(formatEther(response.cost));
+            context.commit('cost', COST);
+            costOk = (COST <= BALANCE);
+        } else {
+            context.commit('cost', null);
+            costOk = false;
+            BALANCE = 0;
+        }
+        context.commit('costOk', costOk);
     } catch (err) {
-        console.log(err);
-        context.commit('transactionError', "Unknown error");
-        context.commit('transactionStatus', -1);
-
+        COST_BN = null;
     }
 }
 
 const logout = async function (context) {
     INIT = false;
     BALANCE = 0;
-    ALLOWANCE = 0;
     COST = 0;
     costOk = false;
-    allowanceOk = false;
     context.commit('cost', null);
     context.commit('costOk', costOk);
-    context.commit('allowanceOk', allowanceOk);
     context.commit('balance', BALANCE);
-    context.commit('allowance', ALLOWANCE);
 
     STARKNET.off("accountsChanged", (accounts) => handleAccountsChanged(context, accounts)); 
 
@@ -444,22 +468,47 @@ const resetDelay = async function resetDelay(context) {
 
 async function mintAlmanac(context) {
     context.commit('transactionStatus', 0);
-    context.commit('transactionIsApprove', false);
     
     try {
         await updateCost(context);
-        let result = await ALMANAC_CONTRACT.publicMint({'market': ALMANAC_INPUT.market, 'day': ALMANAC_INPUT.daysSince});
-        context.commit("transactionLink", `https://${(NETWORK_NAME == 'mainnet-alpha')?'':'goerli.'}voyager.online/tx/${result.transaction_hash}`);
-        context.commit('transactionStatus', 1);
-        await STARKNET.provider.waitForTransaction(result.transaction_hash);
-        context.commit('transactionStatus', 2);
-        context.commit('almanacAvailable', false);
-        await updateBalance(context);
-        await axios.get(`https://server.almanacnft.xyz/almanac/updateStarknet`);
-        setTimeout(() => {
-            downloadAlmanacs(context);
-            loadUserAlmanacs(context);
-        }, 2000 * 60);
+
+        if (COST_BN != null) {
+    
+            console.log(COST_BN);
+
+            let approveCall = {
+                contractAddress: GOERLI_ETHER_ADDRESS,
+                entrypoint: "approve",
+                calldata: [
+                    GOERLI_ALMANAC_ADDRESS,
+                    uint256.uint256ToBN(COST_BN).toString(),
+                    0
+                ],
+            };
+    
+            let mintCall = {
+                contractAddress: GOERLI_ALMANAC_ADDRESS,
+                entrypoint: "publicMint",
+                calldata: [ALMANAC_INPUT.market, ALMANAC_INPUT.daysSince],
+            };
+    
+            let result = await STARKNET.account.execute([approveCall, mintCall]);
+            context.commit("transactionLink", `https://${(NETWORK_NAME == 'mainnet-alpha')?'':'goerli.'}voyager.online/tx/${result.transaction_hash}`);
+            context.commit('transactionStatus', 1);
+            await STARKNET.provider.waitForTransaction(result.transaction_hash);
+            context.commit('transactionStatus', 2);
+            context.commit('almanacAvailable', false);
+            await updateBalance(context);
+            await axios.get(`https://server.almanacnft.xyz/almanac/updateStarknet`);
+            setTimeout(() => {
+                downloadAlmanacs(context);
+                loadUserAlmanacs(context);
+            }, 2000 * 60);
+        } else {
+            console.log(err);
+            context.commit('transactionError', "Couldn't fetch cost");
+            context.commit('transactionStatus', -1);
+        }
     } catch (err) {
         console.log(err);
         context.commit('transactionError', "Unknown error");
@@ -501,8 +550,6 @@ export default {
     logout,
     connectArgentX,
 
-    approveEther,
-       
     setAlmanac,
     resetDelay,
     mintAlmanac,
