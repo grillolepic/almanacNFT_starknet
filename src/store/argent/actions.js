@@ -12,11 +12,15 @@ let COST = 0;
 let COST_BN = null;
 let BALANCE = 0;
 
+let PUBLIC_SUPPLY = 0;
+let MILESTONE_SUPPLY = 0;
+
 let MARKETS = [];
 
 let ALL_ALMANACS = [];
 let USER_ALMANACS = [];
 let FILTERED_ALMANACS = [];
+let LOADED_ALMANACS = false;
 
 let FILTER = {
     onlyUser: false,
@@ -55,6 +59,7 @@ let ALMANAC_INPUT = { market: 0, daysSince: 0 };
 let DATA_INPUT_TIMEOUT = null;
 const INPUT_DELAY = 3 * 1000;
 
+
 async function getMarkets(context) {
     console.log("getMarkets()");
     try {
@@ -86,6 +91,7 @@ async function downloadAlmanacs(context) {
     context.commit('almanacs', ALL_ALMANACS);
     filterAlmanacs(context);
     context.commit('loadingAlmanacs', false);
+    LOADED_ALMANACS = true;
 }
 
 const init = async function (context) {
@@ -252,19 +258,19 @@ async function updateTotalSupply(context) {
         //getPublicMinted()
         console.log("Finding Almanac public minted....");
         let response = await ALMANAC_CONTRACT.getPublicMinted();
-        let publicMinted = uint256.uint256ToBN(response.publicMinted).toNumber();
-        context.commit('publicMinted', publicMinted);
+        PUBLIC_SUPPLY = uint256.uint256ToBN(response.publicMinted).toNumber();
+        context.commit('publicMinted', PUBLIC_SUPPLY);
 
         //getMilestonesMinted
         console.log("Finding Almanac Milestones minted....");
         let response2 = await ALMANAC_CONTRACT.getMilestonesMinted();
-        let milestonesMinted = uint256.uint256ToBN(response2.milestonesMinted).toNumber();
-        context.commit('milestonesMinted', milestonesMinted);
+        MILESTONE_SUPPLY = uint256.uint256ToBN(response2.milestonesMinted).toNumber();
+        context.commit('milestonesMinted', MILESTONE_SUPPLY);
 
-        let total = publicMinted + milestonesMinted;
+        let total = PUBLIC_SUPPLY + MILESTONE_SUPPLY;
         context.commit('totalSupply', total);
 
-        supplyOk = (publicMinted < MAX_PUBLIC_SUPPLY);
+        supplyOk = (PUBLIC_SUPPLY < MAX_PUBLIC_SUPPLY);
         context.commit('supplyOk', supplyOk);
     } else {
         supplyOk = false;
@@ -479,7 +485,6 @@ const resetTransaction = function resetTransaction(context) {
 }
 
 const updateTitle = async function updateTitle(context, info) {
-    
     let objMessage = {
         id: info.id,
         title: info.title.substring(0,255),
@@ -521,6 +526,60 @@ const updateTitle = async function updateTitle(context, info) {
     } catch (err) {}
 }
 
+
+const selectAlmanac = async function selectAlmanac(context, id) {
+    context.commit('selectedAlmanacLoading', true);
+    context.commit('selectedAlmanacId', id);
+
+    console.log(`selectAlmanac(${id})`);
+
+    if (!LOADED_ALMANACS) {
+        return setTimeout(() => selectAlmanac(context, id), 2000);
+    }
+
+    if (id == 0) { return context.commit('selectedAlmanacExists', false); }
+    else {
+        let exists = ALL_ALMANACS.find((x) => x.id == id);
+        if (exists != undefined) {
+            context.commit('selectedAlmanacExists', true);
+
+            context.commit('selectedAlmanacTitle', exists.title);
+            context.commit('selectedAlmanacDescription', exists.description);
+            context.commit('selectedAlmanacMarket', exists.market);
+
+            if (USER_ALMANACS.includes(id)) {
+                context.commit('selectedAlmanacUserOwned', true);
+                context.commit('selectedAlmanacOwner', ADDRESS);
+            } else {
+                if (STARKNET) {
+                    let response = await ALMANAC_CONTRACT.ownerOf(uint256.bnToUint256(number.toBN(id)));
+                    let owner = validateAndParseAddress(response.owner);
+                    context.commit('selectedAlmanacOwner', owner);
+                    if (owner == ADDRESS) {
+                        context.commit('selectedAlmanacUserOwned', true);
+                    }
+                }
+            }
+        } else {
+            context.commit('selectedAlmanacExists', false);
+        }
+    }
+
+    context.commit('selectedAlmanacLoading', false);
+}
+
+
+const resetSelectedAlmanac = async function selectAlmanac(context) {
+    context.commit('selectedAlmanacLoading', false);
+    context.commit('selectedAlmanacExists', false);
+    context.commit('selectedAlmanacUserOwned', false);
+    context.commit('selectedAlmanacId', null);
+    context.commit('selectedAlmanacTitle', null);
+    context.commit('selectedAlmanacDescription', null);
+    context.commit('selectedAlmanacMarket', null);
+    context.commit('selectedAlmanacOwner', null);
+}
+
 function formatEther(n) {
     let bn = uint256.uint256ToBN(n).toString();
     let currentStr = "";
@@ -534,6 +593,10 @@ function formatEther(n) {
     return currentStr;
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default {
     init,
     logout,
@@ -545,6 +608,8 @@ export default {
     
     filterAlmanacs,
 
+    selectAlmanac,
+    resetSelectedAlmanac,
     updateTitle,
 
     resetCurrentAlmanac,

@@ -121,7 +121,7 @@ export default {
       state.almanac.queryingDataAvailable = value;
     },
   
-  
+
     transactionStatus: function (state, value) {
       state.transaction.status = value;
     },
@@ -132,6 +132,32 @@ export default {
       state.transaction.error = value;
     },
   
+
+    selectedAlmanacLoading: function (state, value) {
+      state.selectedAlmanac.loading = value;
+    },
+    selectedAlmanacExists: function (state, value) {
+      state.selectedAlmanac.exists = value;
+    },
+    selectedAlmanacUserOwned: function (state, value) {
+      state.selectedAlmanac.userOwned = value;
+    },
+    selectedAlmanacId: function (state, value) {
+      state.selectedAlmanac.id = value;
+    },
+    selectedAlmanacTitle: function (state, value) {
+      state.selectedAlmanac.title = value;
+    },
+    selectedAlmanacDescription: function (state, value) {
+      state.selectedAlmanac.description = value;
+    },
+    selectedAlmanacMarket: function (state, value) {
+      state.selectedAlmanac.market = value;
+    },
+    selectedAlmanacOwner: function (state, value) {
+      state.selectedAlmanac.owner = value;
+    },
+
 
     markets: function (state, value) {
       state.markets = value;

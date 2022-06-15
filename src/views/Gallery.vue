@@ -15,7 +15,7 @@
   </div>
 
   <div class="viewContainer">
-    <div v-if="selectedId == null">
+    <div v-if="argent.selectedAlmanac.id == null">
         <div id="title">gallery</div>
 
         <div id="loadingMessage" v-if="argent.loadingAlmanacs || argent.almanacs.length == 0">
@@ -57,16 +57,32 @@
         </div>
     </div>
     <div v-else>
-        <div id="detailContainer">
-            <div id="detailVideo">
-                <video autoplay id="nftVideo" muted>
-                <source :src="videoLink()" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            <div id="detailAttributes">
-                <router-link :to="{ name:'gallery', params:{'id':''} }">
-                    <div id="backButton">go back</div></router-link>
+        <div id="spinner" v-if="argent.selectedAlmanac.loading"></div>
+        <div v-else>
+            <div id="bigSelectedContainer">
+                <div id="detailContainer" v-if="argent.selectedAlmanac.exists">
+                    <div id="detailVideo">
+                        <video autoplay id="nftVideo" muted>
+                        <source :src="videoLink()" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <div id="detailAttributes">
+                        <div id="almanacDetailName">Almanac #{{argent.selectedAlmanac.id}}</div>
+                        <div id="almanacDetailTitle">{{argent.selectedAlmanac.title==''?argent.selectedAlmanac.description:argent.selectedAlmanac.title}}</div>
+                        <div id="almanacDetailDescription">{{argent.selectedAlmanac.title==''?'':argent.selectedAlmanac.description}}</div>
+                        <div id="almanacDetailMarket"><div id="marketIconDescription" :style="optionMarketIconStyle(argent.selectedAlmanac.market+1)"></div></div>
+                        <div class="detailLabel" v-if="argent.networkOk && argent.selectedAlmanac.owner != null && !argent.selectedAlmanac.userOwned">Owner:</div>
+                        <div class="detailLabel" v-if="argent.selectedAlmanac.userOwned">Owned by you</div>
+                        <div id="almanacDetailOwner" v-if="argent.networkOk && argent.selectedAlmanac.owner != null && !argent.selectedAlmanac.userOwned">{{argent.selectedAlmanac.owner}}</div>
+                    </div>
+                </div>
+                <div v-else>
+                    <div id="notExistsContainer"> 
+                        <div id="notExistsSelected">Almanac #{{argent.selectedAlmanac.id}} does not exist</div>
+                    </div>
+                </div>
+                <router-link :to="{ name:'gallery', params:{'id':''} }"><div id="backButton">go back</div></router-link>
             </div>
         </div>
     </div>
@@ -86,9 +102,6 @@ export default {
     )
   },
   data() { return {
-
-    selectedId: null,
-
     selectOpen: false,
     selectType: "market",
     selectTitle: 'Market:',
@@ -97,24 +110,19 @@ export default {
   mounted: function() {},
   components: {},
   methods: {
-    ...mapActions('argent', ['filterAlmanacs', 'updateTitle']),
+    ...mapActions('argent', ['filterAlmanacs', 'selectAlmanac', 'resetSelectedAlmanac', 'updateTitle']),
 
     updateId: function() {
-        console.log("updateId()");
         if (this.$route.params.id == '') {
-            this.selectedId = null;
+            this.resetSelectedAlmanac();
         } else {
             let newId = parseInt(this.$route.params.id);
-            if (newId > 0) {
-                this.selectedId = newId;
-            } else {
-                this.selectedId = null;
-            }
+            this.selectAlmanac(newId);
         }
     },
 
     videoLink: function() {
-      return `https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/video/${String(this.selectedId).padStart(5,"0")}.mp4`;
+      return `https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/video/${String(this.argent.selectedAlmanac.id).padStart(5,"0")}.mp4`;
     },
 
     almanacStyle: function(index) {
@@ -213,21 +221,96 @@ export default {
 
 <style scoped>
 
-    #detailContainer {
+  #spinner {
+    width: 50px;
+    height: 50px;
+    background-image: url('/public/img/spinner.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -25px;
+    margin-left: -25px;
+    z-index: 99999;
+  }
+
+    .detailLabel {
+        margin-top: 20px;
+    }
+
+    #bigSelectedContainer {
         display: flex;
         flex-direction: column;
-        min-height: calc(100vh - 500px);
-        margin-top: 50px;
         align-content: center;
         align-items: center;
     }
 
+    #notExistsContainer {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+    }
+
+        #notExistsSelected {
+            color: white;
+            margin-top: 100px;
+            font-family: 'Major Mono Display', monospace;
+            font-size: 32px;
+            text-transform: lowercase;
+        }
+
+    #detailContainer {
+        display: flex;
+        flex-direction: row;
+        min-height: calc(100vh - 500px);
+        margin-top: 50px;
+        align-content: center;
+        align-items: center;
+        width: 100%;
+    }
         #nftVideo {
           width: 700px;
           height: 700px;
         }
 
+        #detailVideo {
+            width: 720px;
+        }
+
+        #detailAttributes {
+            display: flex;
+            flex-direction: column;
+            color: white;
+            width: 580px;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            height: 650px;
+        }
+
+            #almanacDetailTitle {
+                font-size: 62px;
+            }
+
+            #marketIconDescription {
+                margin-top: 20px;
+                width: 120px;
+                height: 45px;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+
+            #almanacDetailOwner {
+                font-size: 12px;
+                margin-top: 5px;
+                text-transform: lowercase;
+                font-family: 'Major Mono Display', monospace;
+            }
+
         #backButton {
+            font-size: 32px;
             color: white;
             cursor: pointer;
             margin-top: 40px;

@@ -51,6 +51,17 @@ const state = () => ({
     queryingDataAvailable: false,
   },
 
+  selectedAlmanac: {
+    loading: false,
+    exists: false,
+    userOwned: false,
+    id: null,
+    title: null,
+    description: null,
+    market: null,
+    owner: null
+  },
+
   transaction: {
     status: null,
     link: null,
