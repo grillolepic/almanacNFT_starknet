@@ -396,7 +396,10 @@ export default {
                 display: flex;
                 flex-direction: column;
                 position: absolute;
+                align-items: center;
+                align-content: center;
                 bottom: 50px;
+                width: 30vw;
                 margin-bottom: 60px;
             }
 
@@ -678,5 +681,73 @@ export default {
         .message {
             margin-bottom: 100px;
         }
+
+
+        #detailContainer {
+            flex-direction: column;
+            width: 100%;
+        }
+        #nftVideo {
+          width: 90vw;
+          height: 90vw;
+        }
+
+        #detailVideo {
+            width: 90vw;
+        }
+
+        #detailAttributes {
+            width: 90vw;
+            height: unset;
+        }
+
+            #almanacDetailTitle {
+                font-size: 38px;
+            }
+
+            #almanacDetailOwner {
+                font-size: 7.2px;
+                margin-top: 5px;
+                text-transform: lowercase;
+                font-family: 'Major Mono Display', monospace;
+            }
+
+            #buttonsContainer {
+                display: flex;
+                flex-direction: column;
+                position: unset;
+                margin-top: 40px;
+                width: 90vw;
+                bottom: 50px;
+                margin-bottom: 60px;
+            }
+
+            #removeTitleButton {
+                height: 30px;
+                width: 250px;
+                font-size: 20px;
+                line-height: 30px;
+                margin-left: unset;
+                margin-top: 25px;
+                margin-bottom: unset;
+            }
+
+            #changeTitleButton {
+                margin-bottom: unset;
+                height: 30px;
+                width: 250px;
+                font-size: 20px;
+                line-height: 30px;
+                font-family: 'Major Mono Display', monospace;
+                margin-left: unset;
+            }
+
+        #backButton {
+            margin-bottom: 40px;
+            margin-top: 0px;
+        }
+
+
+
     }
 </style>
