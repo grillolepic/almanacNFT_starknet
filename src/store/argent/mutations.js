@@ -133,6 +133,9 @@ export default {
     },
   
 
+    selectedAlmanacChanging: function (state, value) {
+      state.selectedAlmanac.changing = value;
+    },
     selectedAlmanacLoading: function (state, value) {
       state.selectedAlmanac.loading = value;
     },

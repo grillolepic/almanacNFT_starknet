@@ -52,11 +52,12 @@ const state = () => ({
   },
 
   selectedAlmanac: {
+    changing: false,
     loading: false,
     exists: false,
     userOwned: false,
     id: null,
-    title: null,
+    title: '',
     description: null,
     market: null,
     owner: null

@@ -250,8 +250,48 @@ export default {
 
 
 
+  #inputContainer {
+    z-index: 500;
+    background-color: rgba(0, 0, 0, 0);
+    transition: ease-in-out 0.2s;
+    position: fixed;
+    top:0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
 
-#selectContainer {
+    #inputFieldContainer {
+      width: 500px;
+      height: 230px;
+      transition: ease-in-out 0.2s;
+      display: flex;
+    }
+
+    .hide-input-options {
+        transform: scale(0) !important;
+    }
+
+  #inputField {
+    width: 435px;
+    font-size: 32px;
+    background-color: #22224a;
+    border: 0px;
+    border-radius: 5px;
+    margin-top: 20px;
+    color: white;
+    font-family: 'Gemunu Libre', sans-serif;
+    height: 37px;
+    padding: 10px;
+  }
+
+
+  #selectContainer {
     z-index: 500;
     background-color: rgba(0, 0, 0, 0);
     transition: ease-in-out 0.2s;

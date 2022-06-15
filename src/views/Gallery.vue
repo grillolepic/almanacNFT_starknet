@@ -1,5 +1,17 @@
 <template>
 
+  <div id="inputContainer" :class="{ 'show-select-bg': inputOpen }">
+    <div id="inputBackground" @click="showInput(false)" v-if="inputOpen"></div>
+    <div id="inputFieldContainer" :class="{ 'hide-input-options': !inputOpen }">
+      <div id="optionsBg">
+        <div id="optionsTitle2" class="label">Change Title</div>
+        <input id="inputField" v-model="inputText" maxlength="65" :disabled="argent.selectedAlmanac.changing">
+        <div id="inputWarning" :class="{red: inputText.length >= 65}">{{inputText.length}}/65 characters</div>
+        <div id="changeTitleConfirmButton" class="button noSelect" :class="{'disabled-btn': inputText.length == 0 || argent.selectedAlmanac.changing }" @click="changeTitle(false)">confirm</div>
+      </div>
+    </div>
+  </div>
+
   <div id="selectContainer" :class="{ 'show-select-bg': selectOpen }" @click="showSelect(false)">
     <div id="optionsContainer" :class="{ 'hide-options': !selectOpen }">
       <div id="optionsBg">
@@ -45,7 +57,7 @@
                     <div class="containNft">
                         <router-link :to="{ name: 'gallery', params:{'id': argent.filteredAlmanacs[index].id} }"> <div class="almanacNft" :style="almanacStyle(index)"></div></router-link>
                         <div class="almanacName">Almanac #{{argent.filteredAlmanacs[index].id}}</div>
-                        <div class="almanacDescription">{{argent.filteredAlmanacs[index].description}}</div>
+                        <div class="almanacDescription">{{argent.filteredAlmanacs[index].title.length > 0?argent.filteredAlmanacs[index].title:argent.filteredAlmanacs[index].description}}</div>
                     </div>
                 </div>
             </div>
@@ -75,6 +87,10 @@
                         <div class="detailLabel" v-if="argent.networkOk && argent.selectedAlmanac.owner != null && !argent.selectedAlmanac.userOwned">Owner:</div>
                         <div class="detailLabel" v-if="argent.selectedAlmanac.userOwned">Owned by you</div>
                         <div id="almanacDetailOwner" v-if="argent.networkOk && argent.selectedAlmanac.owner != null && !argent.selectedAlmanac.userOwned">{{argent.selectedAlmanac.owner}}</div>
+                        <div id="buttonsContainer">
+                            <div id="changeTitleButton" v-if="argent.selectedAlmanac.userOwned" class="button noSelect" :class="{'disabled-btn': argent.selectedAlmanac.changing }" @click="showInput(true)">{{argent.selectedAlmanac.title==''?'add title':'change title'}}</div>
+                            <div id="removeTitleButton" v-if="argent.selectedAlmanac.userOwned && argent.selectedAlmanac.title.length > 0" class="button noSelect" :class="{'disabled-btn': argent.selectedAlmanac.changing }" @click="changeTitle(true)">remove title</div>
+                        </div>
                     </div>
                 </div>
                 <div v-else>
@@ -106,6 +122,9 @@ export default {
     selectType: "market",
     selectTitle: 'Market:',
     selectOptions: [],
+
+    inputOpen: false,
+    inputText: ''
   }},
   mounted: function() {},
   components: {},
@@ -162,6 +181,13 @@ export default {
         }
     },
 
+    showInput: function (visible) {
+        this.inputOpen = visible;
+        if (visible) {
+            this.inputText = '';
+        }
+    },
+
     showSelect: function (visible, section = "market") {
         this.selectOpen = visible;
         if (visible) {
@@ -205,11 +231,24 @@ export default {
       window.open(link);
     },
 
-    changeTitle() {
-        this.updateTitle({
-            id: 1003,
-            title: "A green day"
-        })
+    changeTitle: async function(remove) {
+        if (remove) {
+            return await this.updateTitle({
+                id: this.argent.selectedAlmanac.id,
+                title: ''
+            });
+        }
+
+        if (this.inputText.length > 0) {
+            if (this.inputText.length > 65) {
+                this.inputText = this.inputText.substring(0, 65);
+            }
+            await this.updateTitle({
+                id: this.argent.selectedAlmanac.id,
+                title: this.inputText
+            });
+            this.showInput(false);
+        }
     }
 
   },
@@ -235,6 +274,50 @@ export default {
     margin-left: -25px;
     z-index: 99999;
   }
+
+    .red {
+        color: red !important;
+    }
+
+    #inputBackground {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+    }
+
+      .disabled-btn {
+        color: rgba(255, 255, 255, 0.2);
+        background-image: linear-gradient(45deg, #676767, #313131) !important;
+        box-shadow: none;
+      }
+
+      .disabled-btn:hover {
+        background-image: linear-gradient(45deg, #676767, #313131) !important;
+        box-shadow: none !important;
+        cursor: auto;
+      }
+
+  #optionsTitle2 {
+    color: white;
+    font-size: 42px;
+    letter-spacing: 1px;
+  }
+
+    #changeTitleConfirmButton {
+        margin-top: 22px;
+        height: 30px;
+        width: 200px;
+        font-size: 16px;
+        line-height: 30px;
+        font-family: 'Major Mono Display', monospace;
+    }
+
+    #inputWarning {
+        font-family: 'Major Mono Display', monospace;
+        font-size: 12px;
+        color: white;
+        margin-top: 9px;
+    }
 
     .detailLabel {
         margin-top: 20px;
@@ -287,7 +370,7 @@ export default {
             width: 580px;
             justify-content: flex-start;
             flex-wrap: nowrap;
-            height: 650px;
+            height: 700px;
         }
 
             #almanacDetailTitle {
@@ -307,6 +390,33 @@ export default {
                 margin-top: 5px;
                 text-transform: lowercase;
                 font-family: 'Major Mono Display', monospace;
+            }
+
+            #buttonsContainer {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                bottom: 50px;
+                margin-bottom: 60px;
+            }
+
+            #removeTitleButton {
+                height: 30px;
+                width: 300px;
+                font-size: 20px;
+                line-height: 30px;
+                font-family: 'Major Mono Display', monospace;
+                margin-left: 100px;
+            }
+
+            #changeTitleButton {
+                margin-bottom: 30px;
+                height: 30px;
+                width: 300px;
+                font-size: 20px;
+                line-height: 30px;
+                font-family: 'Major Mono Display', monospace;
+                margin-left: 100px;
             }
 
         #backButton {
@@ -506,7 +616,7 @@ export default {
                 margin-left: 20px;
                 margin-top: 2px;
                 font-family: 'Gemunu Libre', sans-serif;
-                font-size: 18px;
+                font-size: 26px;
                 letter-spacing: 1px;
             }
 

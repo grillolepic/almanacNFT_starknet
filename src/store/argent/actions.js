@@ -16,7 +16,6 @@ let PUBLIC_SUPPLY = 0;
 let MILESTONE_SUPPLY = 0;
 
 let MARKETS = [];
-
 let ALL_ALMANACS = [];
 let USER_ALMANACS = [];
 let FILTERED_ALMANACS = [];
@@ -146,6 +145,10 @@ const filterAlmanacs = function (context, settings = {}) {
 
     if (FILTERED_ALMANACS.length > PAGE_SIZE) {
         FILTERED_ALMANACS = FILTERED_ALMANACS.slice(FILTER.page * PAGE_SIZE, (FILTER.page * PAGE_SIZE) + 12);
+    }
+
+    if (FILTER.page > totalPages) {
+        FILTER.page = totalPages;
     }
 
     context.commit('galleryPages', totalPages);
@@ -485,6 +488,9 @@ const resetTransaction = function resetTransaction(context) {
 }
 
 const updateTitle = async function updateTitle(context, info) {
+
+    context.commit('selectedAlmanacChanging', true);
+
     let objMessage = {
         id: info.id,
         title: info.title.substring(0,255),
@@ -523,9 +529,13 @@ const updateTitle = async function updateTitle(context, info) {
         console.log(serverObject);
 
         let response = await axios.post(`https://server.almanacnft.xyz/almanac/updateTitle`,serverObject);
-    } catch (err) {}
-}
 
+        await downloadAlmanacs(context);
+        await selectAlmanac(context, info.id);
+    } catch (err) {}
+
+    context.commit('selectedAlmanacChanging', false);
+}
 
 const selectAlmanac = async function selectAlmanac(context, id) {
     context.commit('selectedAlmanacLoading', true);
@@ -568,13 +578,12 @@ const selectAlmanac = async function selectAlmanac(context, id) {
     context.commit('selectedAlmanacLoading', false);
 }
 
-
 const resetSelectedAlmanac = async function selectAlmanac(context) {
     context.commit('selectedAlmanacLoading', false);
     context.commit('selectedAlmanacExists', false);
     context.commit('selectedAlmanacUserOwned', false);
     context.commit('selectedAlmanacId', null);
-    context.commit('selectedAlmanacTitle', null);
+    context.commit('selectedAlmanacTitle', '');
     context.commit('selectedAlmanacDescription', null);
     context.commit('selectedAlmanacMarket', null);
     context.commit('selectedAlmanacOwner', null);
