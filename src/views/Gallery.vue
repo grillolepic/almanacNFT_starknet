@@ -15,43 +15,59 @@
   </div>
 
   <div class="viewContainer">
-    <div id="title">gallery</div>
+    <div v-if="selectedId == null">
+        <div id="title">gallery</div>
 
-    <div id="loadingMessage" v-if="argent.loadingAlmanacs || argent.almanacs.length == 0">
-        <div class="message" v-if="argent.loadingAlmanacs">Loading Almanac NFTs...</div>
-        <div class="messageContainer" v-else>
-            <div class="message">No almanacs minted</div>
-            <router-link :to="'/mint'"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link>
-        </div>
-    </div>
-    <div id="galleryContainer" v-else>
-        <div id="settings">
-            <div class="filterOption" v-if="argent.connected && argent.address && argent.networkOk">
-                <div class="filterTitle">Owned by:</div>
-                <div class="filterShow noSelect" @click="switchOwner()">{{(argent.filter.onlyUser)?'me':'show all'}}</div>
-            </div>
-            <div class="filterOption">
-                <div class="filterTitle">Market:</div>
-                <div class="filterShow noSelect" @click="showSelect(true)">{{(argent.filter.market != null)?(argent.markets[argent.filter.market].name):'show all'}}</div>
-            </div>
-            <div class="filterOption">
-                <div class="filterTitle">Sort By:</div>
-                <div class="filterShow noSelect" @click="switchSortBy()">{{(argent.filter.sortBy).replace("_up", "   ▲").replace("_down", "   ▼")}}</div>
+        <div id="loadingMessage" v-if="argent.loadingAlmanacs || argent.almanacs.length == 0">
+            <div class="message" v-if="argent.loadingAlmanacs">Loading Almanac NFTs...</div>
+            <div class="messageContainer" v-else>
+                <div class="message">No almanacs minted</div>
+                <router-link :to="'/mint'"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link>
             </div>
         </div>
-        <div id="nftContainer">
-            <div v-for="(nft, index) in argent.filteredAlmanacs" :key="index">
-                <div class="containNft">
-                    <div class="almanacNft" @click="goToLink(`https://server.almanacNFT.xyz/almanac/nfts/${argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/video/${argent.filteredAlmanacs[index].id}`)" :style="almanacStyle(index)"></div>
-                    <div class="almanacName">Almanac #{{argent.filteredAlmanacs[index].id}}</div>
-                    <div class="almanacDescription">{{argent.filteredAlmanacs[index].description}}</div>
+        <div id="galleryContainer" v-else>
+            <div id="settings">
+                <div class="filterOption" v-if="argent.connected && argent.address && argent.networkOk">
+                    <div class="filterTitle">Owned by:</div>
+                    <div class="filterShow noSelect" @click="switchOwner()">{{(argent.filter.onlyUser)?'me':'show all'}}</div>
+                </div>
+                <div class="filterOption">
+                    <div class="filterTitle">Market:</div>
+                    <div class="filterShow noSelect" @click="showSelect(true)">{{(argent.filter.market != null)?(argent.markets[argent.filter.market].name):'show all'}}</div>
+                </div>
+                <div class="filterOption">
+                    <div class="filterTitle">Sort By:</div>
+                    <div class="filterShow noSelect" @click="switchSortBy()">{{(argent.filter.sortBy).replace("_up", "   ▲").replace("_down", "   ▼")}}</div>
                 </div>
             </div>
+            <div id="nftContainer">
+                <div v-for="(nft, index) in argent.filteredAlmanacs" :key="index">
+                    <div class="containNft">
+                        <router-link :to="{ name: 'gallery', params:{'id': argent.filteredAlmanacs[index].id} }"> <div class="almanacNft" :style="almanacStyle(index)"></div></router-link>
+                        <div class="almanacName">Almanac #{{argent.filteredAlmanacs[index].id}}</div>
+                        <div class="almanacDescription">{{argent.filteredAlmanacs[index].description}}</div>
+                    </div>
+                </div>
+            </div>
+            <div id="pagesContainer">
+                <div :class="{'disabledPage': argent.filter.page == 0 }" class=" pageLabel noSelect" @click="changePage('prev')">&lt;</div>
+                <div class="currentPageNumber noSelect">{{argent.filter.page+1}}</div>
+                <div :class="{'disabledPage': argent.filter.page == argent.galleryPages }" class="pageLabel noSelect" @click="changePage('next')">&gt;</div>
+            </div>
         </div>
-        <div id="pagesContainer">
-            <div :class="{'disabledPage': argent.filter.page == 0 }" class=" pageLabel noSelect" @click="changePage('prev')">&lt;</div>
-            <div class="currentPageNumber noSelect">{{argent.filter.page+1}}</div>
-            <div :class="{'disabledPage': argent.filter.page == argent.galleryPages }" class="pageLabel noSelect" @click="changePage('next')">&gt;</div>
+    </div>
+    <div v-else>
+        <div id="detailContainer">
+            <div id="detailVideo">
+                <video autoplay id="nftVideo" muted>
+                <source :src="videoLink()" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div id="detailAttributes">
+                <router-link :to="{ name:'gallery', params:{'id':''} }">
+                    <div id="backButton">go back</div></router-link>
+            </div>
         </div>
     </div>
   </div>
@@ -62,7 +78,17 @@ import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'Gallery',
+  created() {
+    this.updateId();
+    this.$watch(
+      () => this.$route.params,
+      (toParams, previousParams) => { this.updateId(); }
+    )
+  },
   data() { return {
+
+    selectedId: null,
+
     selectOpen: false,
     selectType: "market",
     selectTitle: 'Market:',
@@ -71,9 +97,28 @@ export default {
   mounted: function() {},
   components: {},
   methods: {
-    ...mapActions('argent', ['filterAlmanacs']),
+    ...mapActions('argent', ['filterAlmanacs', 'updateTitle']),
+
+    updateId: function() {
+        console.log("updateId()");
+        if (this.$route.params.id == '') {
+            this.selectedId = null;
+        } else {
+            let newId = parseInt(this.$route.params.id);
+            if (newId > 0) {
+                this.selectedId = newId;
+            } else {
+                this.selectedId = null;
+            }
+        }
+    },
+
+    videoLink: function() {
+      return `https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/video/${String(this.selectedId).padStart(5,"0")}.mp4`;
+    },
+
     almanacStyle: function(index) {
-      let style = `background-image: url("https://server.almanacNFT.xyz/almanac/nfts/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/image/${this.argent.filteredAlmanacs[index].id}");`;
+      let style = `background-image: url("https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/image/${String(this.argent.filteredAlmanacs[index].id).padStart(5,"0")}.png");`;
       return style;
     },
 
@@ -151,6 +196,14 @@ export default {
     goToLink(link) {
       window.open(link);
     },
+
+    changeTitle() {
+        this.updateTitle({
+            id: 1003,
+            title: "A green day"
+        })
+    }
+
   },
   computed: mapState({
       argent: (state) => state.argent,
@@ -159,6 +212,27 @@ export default {
 </script>
 
 <style scoped>
+
+    #detailContainer {
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 500px);
+        margin-top: 50px;
+        align-content: center;
+        align-items: center;
+    }
+
+        #nftVideo {
+          width: 700px;
+          height: 700px;
+        }
+
+        #backButton {
+            color: white;
+            cursor: pointer;
+            margin-top: 40px;
+            font-family: 'Major Mono Display', monospace;
+        }
 
   #optionsTitle {
     color: white;

@@ -17,10 +17,11 @@ const routes = [
     component: Mint
   },
   {
-    path: '/gallery',
+    path: '/gallery/:id?',
     name: 'gallery',
     component: Gallery
   },
+  /*
   {
     path: '/milestones',
     name: 'milestones',
@@ -31,6 +32,7 @@ const routes = [
     name: 'FAQ',
     component: FAQ
   }
+  */
 ];
 
 const router = createRouter({
