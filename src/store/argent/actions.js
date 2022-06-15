@@ -1,7 +1,7 @@
 const axios = require('axios').default;
 import moment from 'moment';
 import { connect, disconnect } from "@argent/get-starknet";
-import { Contract, Account, number, uint256, validateAndParseAddress, hash, ec, transaction } from "starknet";
+import { Contract, Account, number, uint256, validateAndParseAddress, hash, ec } from "starknet";
 
 let INIT = false;
 let STARKNET = null;
@@ -91,7 +91,7 @@ async function downloadAlmanacs(context) {
 const init = async function (context) {
     await getMarkets(context);
     await downloadAlmanacs(context);
-    STARKNET = await connect({ showList: false })
+    STARKNET = await connect({ showList: false, include:["argentX"] })
     await STARKNET?.enable();
     if (STARKNET?.isConnected) {
         login(context);
@@ -194,58 +194,6 @@ const login = async function (context) {
         context.commit('connected', true);
         context.commit('address', ADDRESS);
         context.commit('networkOk', NETWORK_OK);
-
-        /*
-        ------------------ VERIFY SIGNATURES ------------------
-
-        let ARGENT_ACCOUNT = new Contract(
-            ARGENT_ABI,
-            ADDRESS,
-            STARKNET.provider
-        );
-        let response = await ARGENT_ACCOUNT.get_signer();
-        let pubKey = response.signer;
-        console.log(` - Got this public key from contract: ${number.toHex(pubKey)}`);
-        
-
-        //Frontend
-
-        let longString = "This is a very, very, very, very, very, very long string.";
-        let hashedMsg = number.toHex(hash.starknetKeccak(longString));
-        console.log(` - Hashed string is: ${hashedMsg}`);
-
-        let signableMessage = {
-            domain: {
-                name: "AlmanacNFT",
-                chainId: (NETWORK_NAME == 'mainnet-alpha') ? "SN_MAIN" : "SN_GOERLI",
-                version: "0.0.1",
-            },
-            types: {
-                StarkNetDomain: [
-                    { name: "name", type: "felt" },
-                    { name: "chainId", type: "felt" },
-                    { name: "version", type: "felt" },
-                ],
-                Message: [{ name: "msg", type: "felt" }],
-            },
-            primaryType: "Message",
-            message: {
-                msg: hashedMsg
-            }
-        };
-        let signature = await STARKNET.account.signMessage(signableMessage);
-        console.log(signature);
-
-        //Server side
-        const starkKeyPair = ec.genKeyPair();
-        const starkKeyPub = ec.getStarkKey(starkKeyPair);
-
-        let hashed = await await STARKNET.account.hashMessage(signableMessage);
-        console.log(hashed);
-
-        response = await ARGENT_ACCOUNT.is_valid_signature(hashed, signature);
-        console.log(` - is_valid returned: ${response.is_valid.toString()}`);
-        */
 
         if (!INIT) {
             STARKNET.on("accountsChanged", (accounts) => handleAccountsChanged(context, accounts));
@@ -473,8 +421,6 @@ async function mintAlmanac(context) {
         await updateCost(context);
 
         if (COST_BN != null) {
-    
-            console.log(COST_BN);
 
             let approveCall = {
                 contractAddress: GOERLI_ETHER_ADDRESS,
@@ -532,6 +478,49 @@ const resetTransaction = function resetTransaction(context) {
     context.commit('transactionError', null);
 }
 
+const updateTitle = async function updateTitle(context, info) {
+    
+    let objMessage = {
+        id: info.id,
+        title: info.title.substring(0,255),
+        signer: ADDRESS
+    }
+    let strMessage = JSON.stringify(objMessage);
+    let hashedMessage = number.toHex(hash.starknetKeccak(strMessage));
+
+    let signableMessage = {
+        domain: {
+            name: "Almanac",
+            chainId: (NETWORK_NAME == 'mainnet-alpha') ? "SN_MAIN" : "SN_GOERLI",
+            version: "0.0.1",
+        },
+        types: {
+            StarkNetDomain: [
+                { name: "name", type: "felt" },
+                { name: "chainId", type: "felt" },
+                { name: "version", type: "felt" },
+            ],
+            Message: [{ name: "msg", type: "felt" }],
+        },
+        primaryType: "Message",
+        message: {
+            msg: hashedMessage
+        }
+    };
+
+    try {
+        let signature = await STARKNET.account.signMessage(signableMessage);
+        let serverObject = {
+            objMessage,
+            signableMessage,
+            signature
+        }
+        console.log(serverObject);
+
+        let response = await axios.post(`https://server.almanacnft.xyz/almanac/updateTitle`,serverObject);
+    } catch (err) {}
+}
+
 function formatEther(n) {
     let bn = uint256.uint256ToBN(n).toString();
     let currentStr = "";
@@ -555,6 +544,8 @@ export default {
     mintAlmanac,
     
     filterAlmanacs,
+
+    updateTitle,
 
     resetCurrentAlmanac,
     resetTransaction
