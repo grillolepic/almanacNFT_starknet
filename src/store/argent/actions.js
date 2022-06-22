@@ -1,7 +1,7 @@
 const axios = require('axios').default;
 import moment from 'moment';
 import { connect, disconnect } from "@argent/get-starknet";
-import { Contract, Account, number, uint256, validateAndParseAddress, hash, ec } from "starknet";
+import { Contract, number, uint256, validateAndParseAddress, hash } from "starknet";
 
 let INIT = false;
 let STARKNET = null;
@@ -491,14 +491,18 @@ const updateTitle = async function updateTitle(context, info) {
 
     context.commit('selectedAlmanacChanging', true);
 
+    //First, I build an object with all the info I want the user to sign
     let objMessage = {
         id: info.id,
-        title: info.title.substring(0,255),
+        title: info.title.substring(0,65),
         signer: ADDRESS
     }
+
+    //I then hash the object with starknet.js starknetKeccak()
     let strMessage = JSON.stringify(objMessage);
     let hashedMessage = number.toHex(hash.starknetKeccak(strMessage));
 
+    //I build the message for the user to sign and I include the hash as the message
     let signableMessage = {
         domain: {
             name: "Almanac",
@@ -520,14 +524,17 @@ const updateTitle = async function updateTitle(context, info) {
     };
 
     try {
+        //I ask the user to sign the message
         let signature = await STARKNET.account.signMessage(signableMessage);
+
+        //I build a new object with the original object, the signable message and the signature
         let serverObject = {
             objMessage,
             signableMessage,
             signature
         }
-        console.log(serverObject);
 
+        //Finally, I send the object to my server, 
         let response = await axios.post(`https://server.almanacnft.xyz/almanac/updateTitle`,serverObject);
 
         await downloadAlmanacs(context);
