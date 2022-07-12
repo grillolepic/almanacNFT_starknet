@@ -32,6 +32,7 @@ const state = () => ({
   galleryPages: 0,
 
   filter: {
+    changing: false,
     onlyUser: false,
     market: null,
     milestone: null,

@@ -118,6 +118,8 @@ const startDate = function (context) {
 const filterAlmanacs = function (context, settings = {}) {
     console.log("filterAlmanacs()");
 
+    context.commit('filterChanging', true);
+
     if ("onlyUser" in settings) { FILTER.onlyUser = settings.onlyUser; }
     if ("market" in settings) { FILTER.market = settings.market; }
     if ("milestone" in settings) { FILTER.milestone = settings.milestone; }
@@ -159,11 +161,12 @@ const filterAlmanacs = function (context, settings = {}) {
     context.commit('filterSortBy', FILTER.sortBy);
 
     context.commit('filteredAlmanacs', FILTERED_ALMANACS);
+    context.commit('filterChanging', false);
 }
 
 const connectArgentX = async function (context) {
     STARKNET = await connect({
-        //include: ["argentX"],
+        include: ["argentX"],
         modalOptions: {theme: 'dark'}
     });
     await STARKNET?.enable()
@@ -568,12 +571,20 @@ const selectAlmanac = async function selectAlmanac(context, id) {
                 context.commit('selectedAlmanacUserOwned', true);
                 context.commit('selectedAlmanacOwner', ADDRESS);
             } else {
-                if (STARKNET) {
-                    let response = await ALMANAC_CONTRACT.ownerOf(uint256.bnToUint256(number.toBN(id)));
-                    let owner = validateAndParseAddress(response.owner);
-                    context.commit('selectedAlmanacOwner', owner);
-                    if (owner == ADDRESS) {
-                        context.commit('selectedAlmanacUserOwned', true);
+
+                try {
+                    let almanacsReq = await axios.get(`https://api-testnet.aspect.co/api/v0/asset/${(NETWORK_NAME == 'mainnet-alpha')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS}/${id}`);
+                    if (almanacsReq.data.owner?.account_address != undefined) {
+                        context.commit('selectedAlmanacOwner', validateAndParseAddress(almanacsReq.data.owner.account_address));
+                    }
+                } catch (err) {
+                    if (STARKNET) {
+                        let response = await ALMANAC_CONTRACT.ownerOf(uint256.bnToUint256(number.toBN(id)));
+                        let owner = validateAndParseAddress(response.owner);
+                        context.commit('selectedAlmanacOwner', owner);
+                        if (owner == ADDRESS) {
+                            context.commit('selectedAlmanacUserOwned', true);
+                        }
                     }
                 }
             }

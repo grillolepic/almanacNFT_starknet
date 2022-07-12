@@ -15,12 +15,12 @@
   </div>
 
   <div class="viewContainer">
-    <div id="title">mint</div>
+    <div id="title" class="noSelect">mint</div>
     <div v-if="argent.connected && argent.address && argent.networkOk && !argent.serverError && argent.supplyOk">
 
       <!-- In the future, simply remove this v-if -->
       <div v-if="argent.networkName == 'mainnet-alpha'">
-        <div id="almanacConfig">
+        <div id="almanacConfig" class="noSelect">
           <div id="instructions" style="margin-top:50px;">AlmanacNFT is not yet ready for Starknet Mainnet, but you can switch to Starknet Görli Testnet to try it out before release.</div>
         </div>
       </div>
@@ -31,9 +31,9 @@
 
           <div id="almanacConfig" v-if="argent.transaction.status == null">
 
-            <div id="instructions">Choose the market and the date of your Almanac NFT</div>
+            <div id="instructions" class="noSelect">Choose the market and the date of your Almanac NFT</div>
 
-            <div class="label">Market</div>
+            <div class="label noSelect">Market</div>
             <div id="MarketSelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput}" @click="showSelect(true, 'market')">
               <div id="marketIcon" class="noSelect" :style="selectMarketIconStyle"></div>
               <span class="noSelect">{{argent.markets[argent.almanac.market].name}}</span>
@@ -43,19 +43,19 @@
 
             <div id="DateSelect">
               <div class="datePart">
-                <div class="dateLabel">Day</div>
+                <div class="dateLabel noSelect">Day</div>
                 <div id="daySelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput}" @click="showSelect(true, 'day')">
                   <span>{{selectedDate}}</span>
                 </div>
               </div>
               <div class="datePart">
-                <div class="dateLabel">Month</div>
+                <div class="dateLabel noSelect">Month</div>
                   <div id="monthSelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput}" @click="showSelect(true, 'month')">
                     <span>{{selectedMonth}}</span>
                 </div>
               </div>
               <div class="datePart">
-                <div class="dateLabel">Year</div>
+                <div class="dateLabel noSelect">Year</div>
                   <div id="yearSelect" class="comboBox noSelect" :class="{'disabled-btn': argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput}" @click="showSelect(true, 'year')">
                     <span>{{selectedYear}}</span>
                 </div>
@@ -66,21 +66,24 @@
 
             <div class="checker">
               <div class="checkerStatus" :class="{'unavailable': (!argent.almanac.queryingNftAvailable && !argent.almanac.nftAvailable && !argent.almanac.waitingInput), 'querying': (argent.almanac.queryingNftAvailable && !argent.almanac.waitingInput), 'waiting': (argent.almanac.waitingInput)}"></div>
-              <div class="checkerInfo">nft available</div>
+              <div class="checkerInfo noSelect">nft available</div>
             </div>
             <div class="checker">
               <div class="checkerStatus" :class="{'unavailable': (!argent.almanac.queryingDataAvailable && !argent.almanac.dataAvailable && !argent.almanac.waitingInput), 'querying': (argent.almanac.queryingDataAvailable && !argent.almanac.waitingInput), 'waiting': (argent.almanac.waitingInput)}"></div>
-              <div class="checkerInfo">data available</div>
+              <div class="checkerInfo noSelect">data available</div>
             </div>
 
-            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable && !argent.almanac.waitingInput), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable || argent.almanac.waitingInput)}" @click="mint">mint</div>
+            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable && !argent.almanac.waitingInput && argent.costOk), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable || argent.almanac.waitingInput || !argent.costOk)}" @click="mint">mint</div>
 
 
             <div id="infoMessage">
-              <span v-if="!argent.almanac.dataAvailable && !argent.almanac.queryingDataAvailable && !argent.almanac.queryingNftAvailable">it seems like hourly data for this market/day is currently unavailable</span>
+              <span v-if="!argent.almanac.dataAvailable && !argent.almanac.queryingDataAvailable && !argent.almanac.queryingNftAvailable" class="noSelect">it seems like hourly data for this market/day is currently unavailable</span>
               <span v-else>
-                <span v-if="!argent.almanac.nftAvailable && !argent.almanac.queryingNftAvailable && !argent.almanac.queryingDataAvailable">it seems like the nft for this market and day has already been minted</span>
-                <span class="infoCost" v-else>cost: {{argent.cost}} ether</span>
+                <span v-if="!argent.almanac.nftAvailable && !argent.almanac.queryingNftAvailable && !argent.almanac.queryingDataAvailable" class="noSelect">it seems like the nft for this market and day has already been minted</span>
+                <span v-else>
+                  <span v-if="!costOk" class="noSelect">not enough ether (cost: {{argent.cost}} ether)</span>
+                  <span class="infoCost noSelect" v-else>cost: {{argent.cost}} ether</span>
+              </span>
               </span>
             </div>
 
@@ -308,7 +311,7 @@ export default {
     },
 
     mint: function() {
-      if (this.argent.almanac.nftAvailable && this.argent.almanac.dataAvailable && !this.argent.almanac.waitingInput) {
+      if (this.argent.almanac.nftAvailable && this.argent.almanac.dataAvailable && !this.argent.almanac.waitingInput && this.argent.costOk) {
         this.mintAlmanac();
         window.scrollTo(0, 0);
       }

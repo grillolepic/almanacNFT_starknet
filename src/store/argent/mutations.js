@@ -82,6 +82,9 @@ export default {
     },
 
 
+    filterChanging: function (state, value) {
+      state.filter.changing = value;
+    },
     filterOnlyUser: function (state, value) {
       state.filter.onlyUser = value;
     },

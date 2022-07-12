@@ -2,7 +2,7 @@
   <div class="viewContainer">
     <div id="firstSection">
       <div id="logo"></div>
-      <div id="description">
+      <div id="description" class="noSelect">
         📉 10,000 unique crypto trading days 📈<br>
       </div>
       <div id="exampleContainer">
@@ -13,18 +13,18 @@
           </video>
         </div>
         <div id="explainerContainer">
-          <div class="explainerItem">Pick a market,</div>
-          <div class="explainerItem">Pick a date &</div>
-          <div class="explainerItem">Mint a day in crypto!</div>
-          <div class="onlyText">only on</div>
-          <div class="starknetLogo"></div>
+          <div class="explainerItem noSelect">Pick a market,</div>
+          <div class="explainerItem noSelect">Pick a date &</div>
+          <div class="explainerItem noSelect">Mint a day in crypto!</div>
+          <div class="onlyText noSelect">only on</div>
+          <div class="starknetLogo noSelect"></div>
           
         </div>
       </div>
       <router-link :to="'/mint'"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link>
 
       <div id="tradeOn">
-          <div class="tradeOnText">trade on</div>
+          <div class="tradeOnText noSelect">trade on</div>
           <a href="https://testnet.aspect.co/collection/0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a"><div class="aspectLogo"></div></a>
       </div>
 

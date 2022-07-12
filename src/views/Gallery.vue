@@ -28,7 +28,7 @@
 
   <div class="viewContainer">
     <div v-if="argent.selectedAlmanac.id == null">
-        <div id="title">gallery</div>
+        <div id="title" class="noSelect">gallery</div>
 
         <div id="loadingMessage" v-if="argent.loadingAlmanacs || argent.almanacs.length == 0">
             <div class="message" v-if="argent.loadingAlmanacs">Loading Almanac NFTs...</div>
@@ -40,31 +40,31 @@
         <div id="galleryContainer" v-else>
             <div id="settings">
                 <div class="filterOption" v-if="argent.connected && argent.address && argent.networkOk">
-                    <div class="filterTitle">Owned by:</div>
+                    <div class="filterTitle noSelect">Owned by:</div>
                     <div class="filterShow noSelect" @click="switchOwner()">{{(argent.filter.onlyUser)?'me':'show all'}}</div>
                 </div>
                 <div class="filterOption">
-                    <div class="filterTitle">Market:</div>
+                    <div class="filterTitle noSelect">Market:</div>
                     <div class="filterShow noSelect" @click="showSelect(true)">{{(argent.filter.market != null)?(argent.markets[argent.filter.market].name):'show all'}}</div>
                 </div>
                 <div class="filterOption">
-                    <div class="filterTitle">Sort By:</div>
+                    <div class="filterTitle noSelect">Sort By:</div>
                     <div class="filterShow noSelect" @click="switchSortBy()">{{(argent.filter.sortBy).replace("_up", "   ▲").replace("_down", "   ▼")}}</div>
                 </div>
             </div>
             <div id="nftContainer">
                 <div v-for="(nft, index) in argent.filteredAlmanacs" :key="index">
                     <div class="containNft">
-                        <router-link :to="{ name: 'gallery', params:{'id': argent.filteredAlmanacs[index].id} }"> <div class="almanacNft" :style="almanacStyle(index)"></div></router-link>
-                        <div class="almanacName">Almanac #{{argent.filteredAlmanacs[index].id}}</div>
-                        <div class="almanacDescription">{{argent.filteredAlmanacs[index].title.length > 0?argent.filteredAlmanacs[index].title:argent.filteredAlmanacs[index].description}}</div>
+                        <router-link :to="{ name: 'gallery', params:{'id': argent.filteredAlmanacs[index].id} }"> <div class="almanacNft noSelect" :style="almanacStyle(index)"></div></router-link>
+                        <div class="almanacName noSelect">Almanac #{{argent.filteredAlmanacs[index].id}}</div>
+                        <div class="almanacDescription noSelect">{{argent.filteredAlmanacs[index].title.length > 0?argent.filteredAlmanacs[index].title:argent.filteredAlmanacs[index].description}}</div>
                     </div>
                 </div>
             </div>
-            <div id="pagesContainer">
-                <div :class="{'disabledPage': argent.filter.page == 0 }" class=" pageLabel noSelect" @click="changePage('prev')">&lt;</div>
+            <div id="pagesContainer" class="noSelect">
+                <div :class="{'disabledPage': argent.filter.page == 0 || argent.filter.changing }" class="pageLabel noSelect" @click="changePage('prev')">&lt;</div>
                 <div class="currentPageNumber noSelect">{{argent.filter.page+1}}</div>
-                <div :class="{'disabledPage': argent.filter.page == argent.galleryPages }" class="pageLabel noSelect" @click="changePage('next')">&gt;</div>
+                <div :class="{'disabledPage': argent.filter.page == argent.galleryPages || argent.filter.changing }" class="pageLabel noSelect" @click="changePage('next')">&gt;</div>
             </div>
         </div>
     </div>
@@ -168,16 +168,18 @@ export default {
     },
 
     changePage(target) {
-        if (target == 'prev') {
-            if (this.argent.filter.page > 0) {
-                this.filterAlmanacs({ page: this.argent.filter.page - 1 })
+        if (!this.argent.filter.changing) {
+            if (target == 'prev') {
+                if (this.argent.filter.page > 0) {
+                    this.filterAlmanacs({ page: this.argent.filter.page - 1 })
+                }
+            } else if (target == 'next') {
+                if (this.argent.filter.page != this.argent.galleryPages) {
+                    this.filterAlmanacs({ page: this.argent.filter.page + 1 })
+                }
+            } else {
+                this.filterAlmanacs({ page: parseInt(this.argent.filter.page) })
             }
-        } else if (target == 'next') {
-            if (this.argent.filter.page != this.argent.galleryPages) {
-                this.filterAlmanacs({ page: this.argent.filter.page + 1 })
-            }
-        } else {
-            this.filterAlmanacs({ page: parseInt(this.argent.filter.page) })
         }
     },
 
@@ -643,6 +645,7 @@ export default {
             .currentPageNumber {
                 margin-right: 20px;
                 margin-left: 20px;
+                width: 60px;
                 text-align: center;
                 font-family: 'Major Mono Display', monospace;
                 font-size: 36px;

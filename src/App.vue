@@ -199,8 +199,7 @@ export default {
     -webkit-box-shadow: rgba(0,0,0,.12) 0 3px 13px 1px;
   }
 
-  .noselect {
-    -webkit-touch-callout: none;
+  .noSelect {
       -webkit-user-select: none;
       -khtml-user-select: none;
         -moz-user-select: none;
