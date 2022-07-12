@@ -27,7 +27,7 @@
   </div>
 
   <div class="viewContainer">
-    <div v-if="argent.selectedAlmanac.id == null">
+    <div v-if="argent.selectedAlmanac.id == null && !argent.serverError">
         <div id="title" class="noSelect">gallery</div>
 
         <div id="loadingMessage" v-if="argent.loadingAlmanacs || argent.almanacs.length == 0">
@@ -71,7 +71,7 @@
     <div v-else>
         <div id="spinner" v-if="argent.selectedAlmanac.loading"></div>
         <div v-else>
-            <div id="bigSelectedContainer">
+            <div id="bigSelectedContainer" v-if="argent.selectedAlmanac.id != null">
                 <div id="detailContainer" v-if="argent.selectedAlmanac.exists">
                     <div id="detailVideo">
                         <video autoplay id="nftVideo" muted>
@@ -99,6 +99,13 @@
                     </div>
                 </div>
                 <router-link :to="{ name:'gallery', params:{'id':''} }"><div id="backButton">go back</div></router-link>
+            </div>
+            <div id="bigSelectedContainer" v-else>
+                <div id="noServer">AlmAnAc server seems to be down. try again later.</div>
+                <div id="tradeOn">
+                    <div class="tradeOnText noSelect">or trade on</div>
+                    <a href="https://testnet.aspect.co/collection/0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a"><div class="aspectLogo"></div></a>
+                </div>
             </div>
         </div>
     </div>
@@ -655,6 +662,42 @@ export default {
                 color: grey;
                 cursor: default;
             }
+
+
+
+
+
+    #noServer {
+        color: white;
+        font-family: 'Major Mono Display', monospace;
+        margin-top: 200px;
+    }
+
+  #tradeOn {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    margin-top: 30px;
+  }
+
+  .tradeOnText {
+    color: white;
+    font-family: 'Major Mono Display', monospace;
+    margin-right: 20px;
+  }
+
+  .aspectLogo {
+    width: 130px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url('/public/img/aspect.png');
+  }
+
 
     @media only screen and (max-width: 549px) {
 
