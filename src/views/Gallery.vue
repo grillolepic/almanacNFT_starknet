@@ -90,6 +90,10 @@
                         <div id="buttonsContainer">
                             <div id="changeTitleButton" v-if="argent.selectedAlmanac.userOwned" class="button noSelect" :class="{'disabled-btn': argent.selectedAlmanac.changing }" @click="showInput(true)">{{argent.selectedAlmanac.title==''?'add title':'change title'}}</div>
                             <div id="removeTitleButton" v-if="argent.selectedAlmanac.userOwned && argent.selectedAlmanac.title.length > 0" class="button noSelect" :class="{'disabled-btn': argent.selectedAlmanac.changing }" @click="changeTitle(true)">remove title</div>
+                            <div id="tradeOn">
+                                <div class="tradeOnText noSelect">view on</div>
+                                <a :href="`https://testnet.aspect.co/asset/0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a/${argent.selectedAlmanac.id}`"><div class="aspectLogo"></div></a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -409,7 +413,6 @@ export default {
                 align-content: center;
                 bottom: 50px;
                 width: 30vw;
-                margin-bottom: 60px;
             }
 
             #removeTitleButton {
@@ -418,7 +421,7 @@ export default {
                 font-size: 20px;
                 line-height: 30px;
                 font-family: 'Major Mono Display', monospace;
-                margin-left: 100px;
+                margin-bottom: 40px;
             }
 
             #changeTitleButton {
@@ -428,7 +431,6 @@ export default {
                 font-size: 20px;
                 line-height: 30px;
                 font-family: 'Major Mono Display', monospace;
-                margin-left: 100px;
             }
 
         #backButton {
@@ -698,6 +700,17 @@ export default {
     background-image: url('/public/img/aspect.png');
   }
 
+
+  #tradeOn2 {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    margin-top: 30px;
+  }
 
     @media only screen and (max-width: 549px) {
 
