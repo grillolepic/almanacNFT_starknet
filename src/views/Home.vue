@@ -460,7 +460,7 @@
     }
 
     .tw {
-      background-image: url(http://localhost:8080/img/twitter.04dfebb0.png);
+      background-image: url('/public/img/twitter.png');
       width: 45px;
       height: 45px;
       background-size: contain;
