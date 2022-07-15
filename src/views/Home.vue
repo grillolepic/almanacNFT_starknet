@@ -48,27 +48,27 @@
             <source src="/img/bull.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
-          <div class="typeName">Bullish Days 🚀</div>
+          <div class="typeName"><span class="trasnp">Bullish Days</span> 🚀</div>
         </div>
         <div class="almanacType">
           <video autoplay class="typeVideo" muted>
             <source src="/img/bear.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
-          <div class="typeName">Bearish Days 🐻</div>
+          <div class="typeName"><span class="trasnp">Bearish Days</span> 🐻</div>
         </div>
         <div class="almanacType">
           <video autoplay class="typeVideo" muted>
             <source src="/img/wtf.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
-          <div class="typeName">WTF Days 🤔</div>
+          <div class="typeName"><span class="trasnp">WTF Days</span> 🤔</div>
         </div>
       </div>
     </div>
 
     <div id="fourthSection">
-      <div class="marketsInfo noSelect">participate in milestone raffles</div>
+      <div class="marketsInfo noSelect">participate in<br>milestone raffles</div>
       <div id="milestoneContainer">
         <div id="milestoneVideoContainer">
             <video autoplay class="milestoneVideo" muted>
@@ -78,7 +78,7 @@
             <div class="milestoneInfo noSelect">milestone #1 commemorates the registration of the 'bitcoin.org' domain by satoshi nakamoto</div>
           </div>
         <div id="milestoneTextContainer">
-            <div class="milestoneInfo2 noSelect">Once all publicly mintable Almanacs are minted, every minted Almanac will participate on daily, Starknet-VRF raffles for the 30+ Milestone NFTs, celebrating special days in crypto history.</div>
+            <div class="milestoneInfo2 noSelect">Every minted Almanac will participate on daily, Starknet-VRF raffles for the 30+ Milestone NFTs, celebrating special days in crypto history.</div>
             <div class="milestoneInfo3 noSelect">participate just by holding an AlmAnAc!</div>
         </div>
       </div>
@@ -251,20 +251,21 @@
     .marketsInfo {
       color: white;
       text-align: center;
-      font-size: 75px;
+      font-size: 64px;
       font-family: 'Major Mono Display', monospace;
       margin-bottom: 25px;
       margin-top: 30px;
       max-width: 1200px;
       line-height: 85px;
+      font-weight: 800;
     }
 
     .marketsInfo2 {
       color: white;
       text-align: center;
-      font-size: 18px;
+      font-size: 29px;
       font-family: 'Major Mono Display', monospace;
-      margin-top: 10px;
+      margin-top: 15px;
       margin-bottom: 30px;
     }
 
@@ -321,14 +322,16 @@
         .typeVideo {
           width: 300px;
           height: 300px;
+          background-color: #120c2c;
+          box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
         }
 
       .typeName {
-        color: white;
         text-align: center;
         font-size: 36px;
         margin-top: 10px;
         margin-bottom: 25px;
+        font-weight: 200;
       }
 
 
@@ -361,10 +364,13 @@
         width: 500px;
         height: 500px;
         margin: 0px 30px;
+        background-image: linear-gradient(45deg, #dcac45, #c87e10);
+        padding: 2px;
+        box-shadow: 1px 1px 10px rgba(255, 255, 255, 0.438);
       }
 
     .milestoneInfo {
-      color: white;
+      color: #ffc100;
       text-align: center;
       font-size: 18px;
       font-family: 'Major Mono Display', monospace;
@@ -391,9 +397,11 @@
       .milestoneInfo2 {
         color: #ffffff80;
         text-align: center;
-        font-size: 32px;
-        line-height: 40px;
-        text-align: justify;
+        font-size: 38px;
+        line-height: 60px;
+        width: 450px;
+        margin-left: 25px;
+        font-weight: 200;
       }
 
       .milestoneInfo3 {
@@ -403,8 +411,9 @@
         font-family: 'Major Mono Display', monospace;
         text-align: center;
         margin-top: 25px;
-        margin-bottom: 30px;
-        
+        margin-bottom: 128px;
+        letter-spacing: 5px;
+        line-height: 45px;
       }
 
     #faqSection {
@@ -467,6 +476,11 @@
       background-repeat: no-repeat;
     }
 
+    .trasnp {
+      color: #ffffff80;
+      font-size: 28px;
+    }
+
 
   @media only screen and (max-width: 999px) and (min-width: 550px) {
 
@@ -498,6 +512,32 @@
     .starknetLogo {
           width: 230px;
     }
+
+      .milestoneVideo {
+        width: 400px;
+        height: 400px;
+      }
+
+      .milestoneInfo2 {
+        width: 365px;
+        margin-left: 0px;
+        line-height: 45px;
+        font-size: 33px;
+        margin-bottom: 25px;
+      }
+
+      .milestoneInfo3 {
+        font-size: 24px;
+        margin-top: 15px;
+        margin-bottom: 100px;
+        line-height: 34px;
+      }
+
+      #milestoneTextContainer {
+        max-width: 400px;
+        margin: 0px;
+      }
+
   }
 
 
@@ -643,13 +683,21 @@
       .milestoneInfo2 {
         font-size: 21px;
         line-height: 30px;
+        width: 80vw;
+        margin: 0px;
       }
 
       .milestoneInfo3 {
-        font-size: 24px;
+        font-size: 20px;
+        line-height: 28px;
         margin-top: 25px;
         margin-bottom: 30px;
       }
+
+    #milestoneTextContainer {
+      align-items: center;
+      align-content: center;
+    }
 
     #faqTitle {
       font-size: 80px;
