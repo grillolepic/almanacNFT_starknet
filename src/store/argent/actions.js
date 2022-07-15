@@ -58,6 +58,7 @@ let ALMANAC_INPUT = { market: 0, daysSince: 0 };
 let DATA_INPUT_TIMEOUT = null;
 const INPUT_DELAY = 3 * 1000;
 
+const titleRegex = new RegExp("^[a-zA-Z\ \'!?]{0,65}$");
 
 async function getMarkets(context) {
     console.log("getMarkets()");
@@ -493,13 +494,16 @@ const resetTransaction = function resetTransaction(context) {
 const updateTitle = async function updateTitle(context, info) {
 
     context.commit('selectedAlmanacChanging', true);
+    
+    let title = info.title.substring(0,65);
+    if (!titleRegex.test(title)) { return; }
 
     //First, I build an object with all the info I want the user to sign
     let objMessage = {
         id: info.id,
-        title: info.title.substring(0,65),
+        title: title,
         signer: ADDRESS
-    }
+    };
 
     //I then hash the object with starknet.js starknetKeccak()
     let strMessage = JSON.stringify(objMessage);

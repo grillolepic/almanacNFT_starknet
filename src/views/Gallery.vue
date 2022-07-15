@@ -6,7 +6,7 @@
       <div id="optionsBg">
         <div id="optionsTitle2" class="label">Change Title</div>
         <input id="inputField" v-model="inputText" maxlength="65" :disabled="argent.selectedAlmanac.changing">
-        <div id="inputWarning" :class="{red: inputText.length >= 65}">{{inputText.length}}/65 characters</div>
+        <div id="inputWarning" :class="{red: inputText.length > 65 || invalidCharacters}">{{invalidCharacters?'invalid characters':`${inputText.length}/65 characters`}}</div>
         <div id="changeTitleConfirmButton" class="button noSelect" :class="{'disabled-btn': inputText.length == 0 || argent.selectedAlmanac.changing }" @click="changeTitle(false)">confirm</div>
       </div>
     </div>
@@ -119,153 +119,160 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 
+const titleRegex = new RegExp("^[a-zA-Z\ \'!?]{0,65}$");
+
 export default {
-  name: 'Gallery',
-  created() {
-    this.updateId();
-    this.$watch(
-      () => this.$route.params,
-      (toParams, previousParams) => { this.updateId(); }
-    )
-  },
-  data() { return {
-    selectOpen: false,
-    selectType: "market",
-    selectTitle: 'Market:',
-    selectOptions: [],
-
-    inputOpen: false,
-    inputText: ''
-  }},
-  mounted: function() {},
-  components: {},
-  methods: {
-    ...mapActions('argent', ['filterAlmanacs', 'selectAlmanac', 'resetSelectedAlmanac', 'updateTitle']),
-
-    updateId: function() {
-        if (this.$route.params.id == '') {
-            this.resetSelectedAlmanac();
-        } else {
-            let newId = parseInt(this.$route.params.id);
-            this.selectAlmanac(newId);
+    name: 'Gallery',
+    created() {
+        this.updateId();
+        this.$watch(
+        () => this.$route.params,
+        (toParams, previousParams) => { this.updateId(); }
+        )
+    },
+    data() { return {
+        selectOpen: false,
+        selectType: "market",
+        selectTitle: 'Market:',
+        selectOptions: [],
+        inputOpen: false,
+        inputText: '',
+        invalidCharacters: false
+    }},
+    mounted: function() {},
+    components: {},
+    watch: {
+        inputText() {
+            this.invalidCharacters = !titleRegex.test(this.inputText);
+            this.inputText = this.inputText.substring(0,65);     
         }
-    },
+    }, 
+    methods: {
+        ...mapActions('argent', ['filterAlmanacs', 'selectAlmanac', 'resetSelectedAlmanac', 'updateTitle']),
 
-    videoLink: function() {
-      return `https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/video/${String(this.argent.selectedAlmanac.id).padStart(5,"0")}.mp4`;
-    },
-
-    almanacStyle: function(index) {
-      let style = `background-image: url("https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/image/${String(this.argent.filteredAlmanacs[index].id).padStart(5,"0")}.png");`;
-      return style;
-    },
-
-    switchOwner() {
-        this.filterAlmanacs({ onlyUser: !this.argent.filter.onlyUser })
-    },
-
-    switchSortBy() {
-        if (this.argent.filter.sortBy == 'id') {
-            this.filterAlmanacs({ sortBy: 'day_up'});
-        } else if (this.argent.filter.sortBy == 'day_up') {
-            this.filterAlmanacs({ sortBy: 'day_down'});
-        } else if (this.argent.filter.sortBy == 'day_down') {
-            this.filterAlmanacs({ sortBy: 'change_up'});
-        } else if (this.argent.filter.sortBy == 'change_up') {
-            this.filterAlmanacs({ sortBy: 'change_down'});
-        } else {
-            this.filterAlmanacs({ sortBy: 'id'});
-        }
-    },
-
-    changePage(target) {
-        if (!this.argent.filter.changing) {
-            if (target == 'prev') {
-                if (this.argent.filter.page > 0) {
-                    this.filterAlmanacs({ page: this.argent.filter.page - 1 })
-                }
-            } else if (target == 'next') {
-                if (this.argent.filter.page != this.argent.galleryPages) {
-                    this.filterAlmanacs({ page: this.argent.filter.page + 1 })
-                }
+        updateId: function() {
+            if (this.$route.params.id == '') {
+                this.resetSelectedAlmanac();
             } else {
-                this.filterAlmanacs({ page: parseInt(this.argent.filter.page) })
+                let newId = parseInt(this.$route.params.id);
+                this.selectAlmanac(newId);
             }
-        }
-    },
+        },
 
-    showInput: function (visible) {
-        this.inputOpen = visible;
-        if (visible) {
-            this.inputText = '';
-        }
-    },
+        videoLink: function() {
+            return `https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/video/${String(this.argent.selectedAlmanac.id).padStart(5,"0")}.mp4`;
+        },
 
-    showSelect: function (visible, section = "market") {
-        this.selectOpen = visible;
-        if (visible) {
-            this.selectType = section;
-            if (section == "market") {
-                let options = ([{name:'show all', value:'all'}]).concat(this.argent.markets);
-                this.selectOptions = options;
-            }
-        }
-    },
+        almanacStyle: function(index) {
+        let style = `background-image: url("https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/image/${String(this.argent.filteredAlmanacs[index].id).padStart(5,"0")}.png");`;
+        return style;
+        },
 
-    isOptionSelected: function (index) {
-        if (this.selectType == "market") {
-            if (this.argent.filter.market == null) {
-                return index == 0;
+        switchOwner() {
+            this.filterAlmanacs({ onlyUser: !this.argent.filter.onlyUser })
+        },
+
+        switchSortBy() {
+            if (this.argent.filter.sortBy == 'id') {
+                this.filterAlmanacs({ sortBy: 'day_up'});
+            } else if (this.argent.filter.sortBy == 'day_up') {
+                this.filterAlmanacs({ sortBy: 'day_down'});
+            } else if (this.argent.filter.sortBy == 'day_down') {
+                this.filterAlmanacs({ sortBy: 'change_up'});
+            } else if (this.argent.filter.sortBy == 'change_up') {
+                this.filterAlmanacs({ sortBy: 'change_down'});
             } else {
-                return index == (this.argent.filter.market + 1)
+                this.filterAlmanacs({ sortBy: 'id'});
+            }
+        },
+
+        changePage(target) {
+            if (!this.argent.filter.changing) {
+                if (target == 'prev') {
+                    if (this.argent.filter.page > 0) {
+                        this.filterAlmanacs({ page: this.argent.filter.page - 1 })
+                    }
+                } else if (target == 'next') {
+                    if (this.argent.filter.page != this.argent.galleryPages) {
+                        this.filterAlmanacs({ page: this.argent.filter.page + 1 })
+                    }
+                } else {
+                    this.filterAlmanacs({ page: parseInt(this.argent.filter.page) })
+                }
+            }
+        },
+
+        showInput: function (visible) {
+            this.inputOpen = visible;
+            if (visible) {
+                this.inputText = '';
+            }
+        },
+
+        showSelect: function (visible, section = "market") {
+            this.selectOpen = visible;
+            if (visible) {
+                this.selectType = section;
+                if (section == "market") {
+                    let options = ([{name:'show all', value:'all'}]).concat(this.argent.markets);
+                    this.selectOptions = options;
+                }
+            }
+        },
+
+        isOptionSelected: function (index) {
+            if (this.selectType == "market") {
+                if (this.argent.filter.market == null) {
+                    return index == 0;
+                } else {
+                    return index == (this.argent.filter.market + 1)
+                }
+            }
+        },
+
+        optionMarketIconStyle: function (index) {
+            if (index > 0) {
+            return `background-image: url("${this.argent.markets[index-1].image}")`;
+            }
+            return '';
+        },
+
+        selectOption: function (index) {
+        if (this.selectType == 'market') {
+            if (index == 0) {
+                this.filterAlmanacs({ market: null })
+            } else {
+                this.filterAlmanacs({ market: index-1 })
+            }
+
+        }
+        },
+
+        goToLink(link) {
+        window.open(link);
+        },
+
+        changeTitle: async function(remove) {
+            if (remove) {
+                return await this.updateTitle({
+                    id: this.argent.selectedAlmanac.id,
+                    title: ''
+                });
+            }
+
+            if (this.inputText.length > 0 && !this.invalidCharacters) {
+                if (this.inputText.length > 65) {
+                    this.inputText = this.inputText.substring(0, 65);
+                }
+                await this.updateTitle({
+                    id: this.argent.selectedAlmanac.id,
+                    title: this.inputText
+                });
+                this.showInput(false);
             }
         }
     },
-
-    optionMarketIconStyle: function (index) {
-        if (index > 0) {
-          return `background-image: url("${this.argent.markets[index-1].image}")`;
-        }
-        return '';
-    },
-
-    selectOption: function (index) {
-      if (this.selectType == 'market') {
-          if (index == 0) {
-              this.filterAlmanacs({ market: null })
-          } else {
-            this.filterAlmanacs({ market: index-1 })
-          }
-
-      }
-    },
-
-    goToLink(link) {
-      window.open(link);
-    },
-
-    changeTitle: async function(remove) {
-        if (remove) {
-            return await this.updateTitle({
-                id: this.argent.selectedAlmanac.id,
-                title: ''
-            });
-        }
-
-        if (this.inputText.length > 0) {
-            if (this.inputText.length > 65) {
-                this.inputText = this.inputText.substring(0, 65);
-            }
-            await this.updateTitle({
-                id: this.argent.selectedAlmanac.id,
-                title: this.inputText
-            });
-            this.showInput(false);
-        }
-    }
-
-  },
-  computed: mapState({
+    computed: mapState({
       argent: (state) => state.argent,
   }),
 }
