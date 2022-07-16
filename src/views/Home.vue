@@ -41,7 +41,7 @@
     </div>
 
     <div id="thirdSection">
-      <div class="marketsInfo noSelect">capture a day's sentiment</div>
+      <div class="marketsInfo noSelect">capture a day<span class="lowWeight">'</span>s sentiment</div>
       <div id="typesContainer">
         <div class="almanacType">
           <video autoplay class="typeVideo" muted>
@@ -397,7 +397,7 @@
       .milestoneInfo2 {
         color: #ffffff80;
         text-align: center;
-        font-size: 38px;
+        font-size: 35px;
         line-height: 60px;
         width: 450px;
         margin-left: 25px;
@@ -481,6 +481,9 @@
       font-size: 28px;
     }
 
+  .lowWeight {
+    font-weight: 200;
+  }
 
   @media only screen and (max-width: 999px) and (min-width: 550px) {
 
