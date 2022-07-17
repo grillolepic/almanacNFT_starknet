@@ -534,7 +534,6 @@
       letter-spacing: 2px;
       width: 300px;
     }
-
     .answer {
       text-align: justify;
       font-size: 24px;
@@ -806,5 +805,14 @@
     #faqTitle {
       font-size: 80px;
     }
+
+    .question {
+      width: 90vw;
+    }
+
+    .answer {
+      width: 90vw;
+    }
+
   }
 </style>
