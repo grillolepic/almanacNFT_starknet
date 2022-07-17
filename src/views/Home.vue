@@ -86,8 +86,80 @@
 
     <div id="faqSection">
       <div id="faqTitle" class="noSelect">faq</div>
-      <div class="question noSelect">coming soon</div>
-    </div>
+      <div id="questionsContainer">
+
+        <div class="qa">
+          <div class="question noSelect">What is Almanac?</div>
+          <div class="answer noSelect">Almanac is a collection of 10.000 unique crypto-trading day NFTs on StarkNet.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Why Starknet?</div>
+          <div class="answer noSelect">Almanac celebrates crypto's past, so what better place to launch than on crypto's future?</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">How much will an Almanac cost?</div>
+          <div class="answer noSelect">The cost of minting an Almanac will be 0.03 ETH.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Wen launch?</div>
+          <div class="answer noSelect">Development is mostly done. We'll launch as soon as we find StarkNet is ready, with functional bridges and NFT marketplaces.</div>
+        </div>
+
+        <div class="qa">
+          <div class="question noSelect">Why do Almanacs have different background colors?</div>
+          <div class="answer noSelect">The background color of the Almanacs represent the daily price change. Some days might produce unexpected, weird colors.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Do Almanacs have different rarities?</div>
+          <div class="answer noSelect">Apart from the special Milestone Almanacs, all other NFTs are technically equal, but with inherent differences. Very bullish or bearish days might end up being rare, same as local tops and bottoms.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Where is the data obtained from?</div>
+          <div class="answer noSelect">Data is obtained from a few exchange's APIs and from <a href="https://www.cryptocompare.com/">CryptoCompare</a> when no other source is available.</div>
+        </div>
+
+        <div class="qa">
+          <div class="question noSelect">Can I add any title to an Almanac?</div>
+          <div class="answer noSelect">With some common sense exceptions, any title is acceptable and will be allowed.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Where are titles stored?</div>
+          <div class="answer noSelect">Titles are not stored inside the NFT itself, but on the NFT's metadata.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Will I always be able to change an Almanac's title?</div>
+          <div class="answer noSelect">Once all Almanacs are minted, a deadline will be set to title editing. After that, the Almanacs' metadata will be fixed.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Can I add a title to a Milestone Almanac?</div>
+          <div class="answer noSelect">No, Milestone Almanacs already have a fixed title.</div>
+        </div>
+
+        <div class="qa">
+          <div class="question noSelect">How will Milestones be distributed?</div>
+          <div class="answer noSelect">A raffle with verifiable randomness will pick the winner of every Milestrone NFT from the publicly minted Almanac owners.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Why does the NFT show as unavailable on mint?</div>
+          <div class="answer noSelect">Only one Almanac can be minted of a given market and date. If the mint screen shows that the selecte market and date is not available, then that Almanac NFT has already been minted.</div>
+        </div>
+
+
+        <div class="qa">
+          <div class="question noSelect">Why cannot I mint Almanacs from before a given date?</div>
+          <div class="answer noSelect">Hourly data is difficult to obtain from very far away dates.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Why do some Almanac candles look weird?</div>
+          <div class="answer noSelect">Sometimes, especially for very old dates, some source data can be missing, buggy or simply look a little weird compared to higher volume dates.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Where can I stay updated on the latest news?</div>
+          <div class="answer noSelect">Follow @<a href="https://twitter.com/almanacNFT">almanacNFT on Twitter</a>.</div>
+        </div>
+
+      </div>
+  </div>
 
     <div id="finalSection">
       <div class="developedBy noSelect">by Grillo</div>
@@ -312,7 +384,7 @@
 
       .almanacType {
         display: flex;
-        margin: 20px;
+        margin: 0px 20px 0px 20px;
         flex-direction: column;
         flex-wrap: nowrap;
         align-content: center;
@@ -425,7 +497,7 @@
       justify-content: center;
       flex-wrap: nowrap;
       padding-top: 30px;
-      padding-bottom: 100px;
+      padding-bottom: 50px;
       background: rgba(0,0,0,0.3);
       background: -moz-linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.6) 100%);
       background: -webkit-linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 20%, rgba(0,0,0,0.5) 80%,  rgba(0,0,0,0.6) 100%);
@@ -433,19 +505,48 @@
       filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#000000",GradientType=1);
     }
 
+    #questionsContainer {
+      width: 100vw;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
     #faqTitle {
       font-size: 130px;
       color: white;
       font-family: 'Major Mono Display', monospace;
       text-align: center;
+      margin-bottom: 45px;
+    }
+    .qa {
+      display: flex;
+      flex-direction: column;
+      margin: 0px 40px 40px 40px;
     }
 
     .question {
-      font-size: 28px;
+      font-size: 34px;
       color: white;
-      font-family: 'Major Mono Display', monospace;
-      text-align: center;
-      margin-top: 30px;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+      width: 300px;
+    }
+
+    .answer {
+      text-align: justify;
+      font-size: 24px;
+      color: #ffffff80;
+      width: 300px;
+      font-weight: 200;
+      letter-spacing: 1px;
+    }
+
+    .answer a {
+      color: #ffffff80;
+      text-decoration: underline;
     }
 
 
