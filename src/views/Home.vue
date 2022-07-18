@@ -155,7 +155,7 @@
         </div>
         <div class="qa">
           <div class="question noSelect">Is there a roadmap?</div>
-          <div class="answer noSelect">Almanac is a finished product, but I'm building various things on StarkNet and I'll always keep Almanac holders in mind... 👀</a>.</div>
+          <div class="answer noSelect">Almanac is a finished product, but I'm building various things on StarkNet and I'll always keep Almanac holders in mind... 👀</div>
         </div>
         <div class="qa">
           <div class="question noSelect">Where can I stay updated on the latest news?</div>
