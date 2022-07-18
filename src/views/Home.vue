@@ -102,7 +102,7 @@
         </div>
         <div class="qa">
           <div class="question noSelect">Wen launch?</div>
-          <div class="answer noSelect">Development is mostly done. We'll launch as soon as we find StarkNet is ready, with functional bridges and NFT marketplaces.</div>
+          <div class="answer noSelect">Development is mostly done. We'll launch when we find StarkNet is ready, with functional bridges and NFT marketplaces. Soon.</div>
         </div>
 
         <div class="qa">
@@ -154,9 +154,14 @@
           <div class="answer noSelect">Sometimes, especially for very old dates, some source data can be missing, buggy or simply look a little weird compared to higher volume dates.</div>
         </div>
         <div class="qa">
+          <div class="question noSelect">Is there a roadmap?</div>
+          <div class="answer noSelect">Almanac is a finished product, but I'm building various things on StarkNet and I'll always keep Almanac holders in mind... 👀</a>.</div>
+        </div>
+        <div class="qa">
           <div class="question noSelect">Where can I stay updated on the latest news?</div>
           <div class="answer noSelect">Follow @<a href="https://twitter.com/almanacNFT">almanacNFT on Twitter</a>.</div>
         </div>
+
 
       </div>
   </div>
