@@ -211,13 +211,6 @@ export default {
     text-decoration: none;
   }
 
-
-
-
-
-
-
-
   .s-dialog__content {
     border-radius: 30px !important;
   }
@@ -242,12 +235,6 @@ export default {
     font-family: 'Major Mono Display', monospace !important;
     text-transform: lowercase !important;
   }
-
-
-
-
-
-
 
   #inputContainer {
     z-index: 500;

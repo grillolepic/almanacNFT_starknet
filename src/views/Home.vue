@@ -168,7 +168,7 @@
 
     <div id="finalSection">
       <div class="developedBy noSelect">by Grillo</div>
-      <a href="https://twitter.com/defisaurus"><div class="tw noSelect"></div></a>
+      <a href="https://twitter.com/grillo_eth"><div class="tw noSelect"></div></a>
     </div>
 
   </div>
