@@ -81,8 +81,8 @@
               <span v-else>
                 <span v-if="!argent.almanac.nftAvailable && !argent.almanac.queryingNftAvailable && !argent.almanac.queryingDataAvailable" class="noSelect">it seems like the nft for this market and day has already been minted</span>
                 <span v-else>
-                  <span v-if="!costOk" class="noSelect">not enough ether (cost: {{argent.cost}} ether)</span>
-                  <span class="infoCost noSelect" v-else>cost: {{argent.cost}} ether</span>
+                  <span v-if="!argent.costOk" class="noSelect">not enough ether (cost: {{argent.cost}} ether)</span>
+                  <span class="infoCost noSelect" v-if="argent.costOk">cost: {{argent.cost}} ether</span>
               </span>
               </span>
             </div>
