@@ -78,7 +78,7 @@
             <div class="milestoneInfo noSelect">milestone #1 commemorates the registration of the 'bitcoin.org' domain by satoshi nakamoto</div>
           </div>
         <div id="milestoneTextContainer">
-            <div class="milestoneInfo2 noSelect">Every minted Almanac will participate on daily, Starknet-VRF raffles for the 30+ Milestone NFTs, celebrating special days in crypto history.</div>
+            <div class="milestoneInfo2 noSelect">Every minted Almanac will participate on periodic, Starknet-VRF raffles for the 30+ Milestone NFTs, celebrating special days in crypto history.</div>
             <div class="milestoneInfo3 noSelect">participate just by holding an AlmAnAc!</div>
         </div>
       </div>
@@ -90,20 +90,25 @@
 
         <div class="qa">
           <div class="question noSelect">What is Almanac?</div>
-          <div class="answer noSelect">Almanac is a collection of 10.000 unique crypto-trading day NFTs on StarkNet.</div>
+          <div class="answer noSelect">Almanac is a collection of 10.000 unique crypto-trading days NFTs on StarkNet.</div>
         </div>
         <div class="qa">
-          <div class="question noSelect">Why Starknet?</div>
+          <div class="question noSelect">Why StarkNet?</div>
           <div class="answer noSelect">Almanac celebrates crypto's past, so what better place to launch than on crypto's future?</div>
         </div>
         <div class="qa">
-          <div class="question noSelect">How much will an Almanac cost?</div>
-          <div class="answer noSelect">The cost of minting an Almanac will be 0.03 ETH.</div>
+          <div class="question noSelect">How much will Almanacs cost?</div>
+          <div class="answer noSelect">Minting an Almanac will cost 0.03 ETH</div>
         </div>
         <div class="qa">
           <div class="question noSelect">Wen launch?</div>
-          <div class="answer noSelect">Development is mostly done. We'll launch when we find StarkNet is ready, with functional bridges and NFT marketplaces. Soon.</div>
+          <div class="answer noSelect">We plan to launch on mainnet very soon. Stay tuned.</div>
         </div>
+        <div class="qa">
+          <div class="question noSelect">Will I lose my Almanacs in case of a StarkNet state reset?</div>
+          <div class="answer noSelect">Absolutely not. If a state reset was necessary, we'll redeploy and distribute previously minted Almanac to their holders.</div>
+        </div>
+
 
         <div class="qa">
           <div class="question noSelect">Why do Almanacs have different background colors?</div>
@@ -124,7 +129,7 @@
         </div>
         <div class="qa">
           <div class="question noSelect">Where are titles stored?</div>
-          <div class="answer noSelect">Titles are not stored inside the NFT itself, but on the NFT's metadata.</div>
+          <div class="answer noSelect">Titles are not stored on the NFT's metadata, off-chain.</div>
         </div>
         <div class="qa">
           <div class="question noSelect">Will I always be able to change an Almanac's title?</div>
@@ -132,12 +137,16 @@
         </div>
         <div class="qa">
           <div class="question noSelect">Can I add a title to a Milestone Almanac?</div>
-          <div class="answer noSelect">No, Milestone Almanacs already have a fixed title.</div>
+          <div class="answer noSelect">No, Milestone Almanacs will have a fixed title.</div>
         </div>
 
         <div class="qa">
           <div class="question noSelect">How will Milestones be distributed?</div>
-          <div class="answer noSelect">A raffle with verifiable randomness will pick the winner of every Milestrone NFT from the publicly minted Almanac owners.</div>
+          <div class="answer noSelect">A raffle with verifiable randomness (VRF) will pick the winner of every Milestrone NFT from the publicly minted Almanac owners.</div>
+        </div>
+        <div class="qa">
+          <div class="question noSelect">Which VRF implementation will Almanac use?</div>
+          <div class="answer noSelect">Almanac currently has a generalized interface for randomness. We'll wait for a trusteless solution to distribute Milestones among holders.</div>
         </div>
         <div class="qa">
           <div class="question noSelect">Why does the NFT show as unavailable on mint?</div>
@@ -151,25 +160,36 @@
         </div>
         <div class="qa">
           <div class="question noSelect">Why do some Almanac candles look weird?</div>
-          <div class="answer noSelect">Sometimes, especially for very old dates, some source data can be missing, buggy or simply look a little weird compared to higher volume dates.</div>
+          <div class="answer noSelect">Sometimes, especially for very old dates, data can be missing, buggy or simply look a little weird compared to higher volume dates.</div>
         </div>
         <div class="qa">
           <div class="question noSelect">Is there a roadmap?</div>
-          <div class="answer noSelect">Almanac is a finished product, but I'm building various things on StarkNet and I'll always keep Almanac holders in mind... 👀</div>
+          <div class="answer noSelect">Almanac is a finished product, but I plan to offer long term support, plus I will continue building on StarkNet and I'll always keep Almanac holders in mind... 👀</div>
         </div>
         <div class="qa">
           <div class="question noSelect">Where can I stay updated on the latest news?</div>
-          <div class="answer noSelect">Follow @<a href="https://twitter.com/almanacNFT">almanacNFT on Twitter</a>.</div>
+          <div class="answer noSelect">Follow <a href="https://twitter.com/grillo_eth">me</a> and @<a href="https://twitter.com/almanacNFT">almanacNFT</a> on Twitter.</div>
         </div>
 
 
       </div>
   </div>
 
-    <div id="finalSection">
-      <div class="developedBy noSelect">by Grillo</div>
-      <a href="https://twitter.com/grillo_eth"><div class="tw noSelect"></div></a>
-    </div>
+  <div id="followBigContainer">
+    <a href="https://twitter.com/ethBurNFT" class="developedBy">
+      <div id="followContainer">
+        <div class="developedBy noSelect">@almanacNFT</div>
+        <div class="twitter noSelect"></div>
+      </div>
+    </a>
+
+    <a href="https://twitter.com/grillo_eth" class="developedBy">
+      <div id="followContainer">
+        <div class="grillo twitter noSelect"></div>
+        <div class="developedBy noSelect">@grillo_eth</div>
+      </div>
+    </a>
+  </div>
 
   </div>
 </template>
@@ -517,6 +537,7 @@
       align-items: flex-start;
       justify-content: center;
       flex-wrap: wrap;
+      max-width: 1200px;
     }
 
     #faqTitle {
@@ -567,18 +588,50 @@
       background: rgba(0,0,0,0.6)
     }
 
-    .developedBy {
-      color: white;
-      letter-spacing: 2px;
-      margin-right: 10px;
-    }
 
-    .tw {
-      background-image: url('/public/img/twitter.png');
-      width: 45px;
-      height: 45px;
+
+  #followBigContainer {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 20px 0px 60px 0px;
+    width: 100vw;
+    background-color: #11051c;
+  }
+
+  #followContainer {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    margin: 0px 40px;
+  }
+
+  .developedBy {
+    text-decoration: none !important;
+  }
+
+    .twitter {
+      background-image: url('/public/img/twitterLogo.jpg');
+      width: 55px;
+      height: 55px;
       background-size: contain;
       background-repeat: no-repeat;
+      margin: 10px;
+      transition: 200ms;
+      border-radius: 100px;
+    }
+
+    .grillo {
+      background-image: url('../../public/img/grillo.jpg') !important;
+    }
+
+    .twitter:hover {
+      transform: scale(1.1);
     }
 
     .trasnp {
