@@ -18,7 +18,7 @@
     <span class="contractInfo extraMarginTop">available markets: {{argent.almanacAllowedMarkets}}</span>
 
     <span class="contractInfo extraMarginTop">my almanac balance: {{argent.almanacBalance}} almanacs</span>
-    <span class="contractInfo">almanac cost: {{argent.almanacCost}} teth</span>
+    <span class="contractInfo">almanac price: {{argent.almanacCost}} teth</span>
 
     <button class="button extraMarginTop" @click="allowTestEther()" v-if="argent.networkOk && parseFloat(argent.almanacCost) > parseFloat(argent.testEtherAllowance)">ALLOW TEST ETHER</button>
 

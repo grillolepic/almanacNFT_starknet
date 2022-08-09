@@ -2,10 +2,10 @@
     <div id="Navbar">
         <router-link :to="'/'"><div id="Logo"></div></router-link>
 
-        <router-link :to="'/mint'"><span class="link noSelect" :class="{ 'selected': currentPath == '/mint' }" v-if="!isMobile">mint</span></router-link>
-        <router-link :to="'/gallery'"><span class="link noSelect" :class="{ 'selected': currentPath == '/gallery' }" v-if="!isMobile">gallery</span></router-link>
-        <!--router-link :to="'/milestones'"><span class="link" :class="{ 'selected': currentPath == '/milestones' }" v-if="!isMobile">milestones</span></router-link>
-        <router-link :to="'/FAQ'"><span class="link" :class="{ 'selected': currentPath == '/FAQ' }" v-if="!isMobile">faq</span></router-link-->
+        <!--router-link :to="'/mint'"><span class="link noSelect" :class="{ 'selected': currentPath == '/mint' }" v-if="!isMobile">mint</span></router-link-->
+        <!--router-link :to="'/gallery'"><span class="link noSelect" :class="{ 'selected': currentPath == '/gallery' }" v-if="!isMobile">gallery</span></router-link-->
+        <!--router-link :to="'/milestones'"><span class="link" :class="{ 'selected': currentPath == '/milestones' }" v-if="!isMobile">milestones</span></router-link-->
+        <!--router-link :to="'/FAQ'"><span class="link" :class="{ 'selected': currentPath == '/FAQ' }" v-if="!isMobile">faq</span></router-link-->
 
         <div id="ConnectButton" class="button noSelect" :class="{ 'orange-btn': argent.connected && argent.address && !argent.networkOk, 'green-btn': argent.connected && argent.address && argent.networkOk }" @click="toggleConnect" v-if="!isMobile">
             <span id="argentX" v-if="!argent.connected"></span>
@@ -15,10 +15,10 @@
         <div id="MenuButton" @click="showMenu(true)" v-if="isMobile"></div>
         <div id="Menu" :class="{ 'show-menu': menu }" v-if="isMobile" v-touch:swipe.right="swipeHandler">
             <router-link :to="'/'" @click="showMenu(false)"><div id="Logo" class="in-menu-logo"></div></router-link>
-            <router-link :to="'/mint'" @click="showMenu(false)"><span class="link in-menu" :class="{ 'selected': currentPath == '/mint' }">mint</span></router-link>
-            <router-link :to="'/gallery'" @click="showMenu(false)"><span class="link in-menu" :class="{ 'selected': currentPath == '/gallery' }">gallery</span></router-link>
-            <!--router-link :to="'/milestones'" @click="showMenu(false)"><span class="link" :class="{ 'selected': currentPath == '/milestones' }" v-if="!isMobile">milestones</span></router-link>
-            <router-link :to="'/FAQ'" @click="showMenu(false)"><span class="link" :class="{ 'selected': currentPath == '/FAQ' }" v-if="!isMobile">faq</span></router-link-->
+            <!--router-link :to="'/mint'" @click="showMenu(false)"><span class="link in-menu" :class="{ 'selected': currentPath == '/mint' }">mint</span></router-link-->
+            <!--router-link :to="'/gallery'" @click="showMenu(false)"><span class="link in-menu" :class="{ 'selected': currentPath == '/gallery' }">gallery</span></router-link-->
+            <!--router-link :to="'/milestones'" @click="showMenu(false)"><span class="link" :class="{ 'selected': currentPath == '/milestones' }" v-if="!isMobile">milestones</span></router-link-->
+            <!--router-link :to="'/FAQ'" @click="showMenu(false)"><span class="link" :class="{ 'selected': currentPath == '/FAQ' }" v-if="!isMobile">faq</span></router-link-->
 
             <div id="ConnectButton" class="button" :class="{ 'orange-btn': argent.connected && argent.address && !argent.networkOk, 'green-btn': argent.connected && argent.address && argent.networkOk }"
                 @click="toggleConnect"><span>{{btnConnectText}}</span></div>

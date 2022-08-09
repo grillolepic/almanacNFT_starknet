@@ -73,7 +73,7 @@
               <div class="checkerInfo noSelect">data available</div>
             </div>
 
-            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable && !argent.almanac.waitingInput && argent.costOk), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable || argent.almanac.waitingInput || !argent.costOk)}" @click="mint">mint</div>
+            <div id="mintButton" class="button noSelect" :class="{'green-btn':(argent.almanac.dataAvailable && argent.almanac.nftAvailable && !argent.almanac.waitingInput && argent.priceOk), 'disabled-btn':(!argent.almanac.dataAvailable || !argent.almanac.nftAvailable || argent.almanac.waitingInput || !argent.priceOk)}" @click="mint">mint</div>
 
 
             <div id="infoMessage">
@@ -81,8 +81,8 @@
               <span v-else>
                 <span v-if="!argent.almanac.nftAvailable && !argent.almanac.queryingNftAvailable && !argent.almanac.queryingDataAvailable" class="noSelect">it seems like the nft for this market and day has already been minted</span>
                 <span v-else>
-                  <span v-if="!argent.costOk" class="noSelect">not enough ether (cost: {{argent.cost}} ether)</span>
-                  <span class="infoCost noSelect" v-if="argent.costOk">cost: {{argent.cost}} ether</span>
+                  <span v-if="!argent.priceOk" class="noSelect">not enough ether (price: {{argent.price}} ether)</span>
+                  <span class="infoCost noSelect" v-if="argent.priceOk">price: {{argent.price}} ether</span>
               </span>
               </span>
             </div>
@@ -311,7 +311,7 @@ export default {
     },
 
     mint: function() {
-      if (this.argent.almanac.nftAvailable && this.argent.almanac.dataAvailable && !this.argent.almanac.waitingInput && this.argent.costOk) {
+      if (this.argent.almanac.nftAvailable && this.argent.almanac.dataAvailable && !this.argent.almanac.waitingInput && this.argent.priceOk) {
         this.mintAlmanac();
         window.scrollTo(0, 0);
       }

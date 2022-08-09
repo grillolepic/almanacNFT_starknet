@@ -21,12 +21,13 @@
           
         </div>
       </div>
-      <router-link :to="'/mint'"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link>
+      <div id="mainnet">MAINNET SOON</div>
+      <!--router-link :to="'/mint'"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link-->
 
-      <div id="tradeOn">
+      <!--div id="tradeOn">
           <div class="tradeOnText noSelect">trade on</div>
           <a href="https://testnet.aspect.co/collection/0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a"><div class="aspectLogo"></div></a>
-      </div>
+      </div-->
     </div>
 
     <div id="secondSection">
@@ -97,8 +98,8 @@
           <div class="answer noSelect">Almanac celebrates crypto's past, so what better place to launch than on crypto's future?</div>
         </div>
         <div class="qa">
-          <div class="question noSelect">How much will Almanacs cost?</div>
-          <div class="answer noSelect">Minting an Almanac will cost 0.03 ETH</div>
+          <div class="question noSelect">How much will Almanacs price?</div>
+          <div class="answer noSelect">Minting an Almanac will price 0.03 ETH</div>
         </div>
         <div class="qa">
           <div class="question noSelect">Wen launch?</div>
@@ -208,6 +209,13 @@
 </script>
 
 <style scoped>
+
+  #mainnet {
+    color: white;
+    font-size: 72px;
+    margin: 40px;
+  }
+
   #firstSection {
     /*min-height: calc(100vh - 90px);*/
     width: 100vw;
@@ -870,6 +878,12 @@
 
     .answer {
       width: 90vw;
+    }
+
+    #mainnet {
+      color: white;
+      font-size: 48px;
+      margin: 40px;
     }
 
   }

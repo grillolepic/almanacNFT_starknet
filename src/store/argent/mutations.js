@@ -39,11 +39,11 @@ export default {
     },
 
 
-    cost: function (state, value) {
-      state.cost = value;
+    price: function (state, value) {
+      state.price = value;
     },
-    costOk: function (state, value) {
-      state.costOk = value;
+    priceOk: function (state, value) {
+      state.priceOk = value;
     },
 
 

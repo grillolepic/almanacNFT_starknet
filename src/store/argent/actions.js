@@ -51,7 +51,7 @@ let almanacDataAvailable = false;
 const MAX_PUBLIC_SUPPLY = 9000;
 let supplyOk = false;
 
-let costOk = false;
+let priceOk = false;
 
 let LAST_ALMANAC_INPUT = { market: 0, daysSince: 0 };
 let ALMANAC_INPUT = { market: 0, daysSince: 0 };
@@ -255,8 +255,8 @@ async function updateBalance(context) {
     BALANCE = parseFloat(formatEther(response.balance));
     context.commit('balance', BALANCE);
 
-    costOk = (COST <= BALANCE);
-    context.commit('costOk', costOk);
+    priceOk = (COST <= BALANCE);
+    context.commit('priceOk', priceOk);
 }
 
 async function updateTotalSupply(context) {
@@ -291,18 +291,18 @@ async function updateTotalSupply(context) {
 async function updateCost(context) {
     try {
         if (STARKNET) {
-            console.log("Finding Almanac cost....");
+            console.log("Finding Almanac price....");
             let response = await ALMANAC_CONTRACT.getCost();
-            COST_BN = response.cost;
-            COST = parseFloat(formatEther(response.cost));
-            context.commit('cost', COST);
-            costOk = (COST <= BALANCE);
+            COST_BN = response.price;
+            COST = parseFloat(formatEther(response.price));
+            context.commit('price', COST);
+            priceOk = (COST <= BALANCE);
         } else {
-            context.commit('cost', null);
-            costOk = false;
+            context.commit('price', null);
+            priceOk = false;
             BALANCE = 0;
         }
-        context.commit('costOk', costOk);
+        context.commit('priceOk', priceOk);
     } catch (err) {
         COST_BN = null;
     }
@@ -312,9 +312,9 @@ const logout = async function (context) {
     INIT = false;
     BALANCE = 0;
     COST = 0;
-    costOk = false;
-    context.commit('cost', null);
-    context.commit('costOk', costOk);
+    priceOk = false;
+    context.commit('price', null);
+    context.commit('priceOk', priceOk);
     context.commit('balance', BALANCE);
 
     STARKNET.off("accountsChanged", (accounts) => handleAccountsChanged(context, accounts)); 
@@ -465,7 +465,7 @@ async function mintAlmanac(context) {
             }, 2000 * 60);
         } else {
             console.log(err);
-            context.commit('transactionError', "Couldn't fetch cost");
+            context.commit('transactionError', "Couldn't fetch price");
             context.commit('transactionStatus', -1);
         }
     } catch (err) {

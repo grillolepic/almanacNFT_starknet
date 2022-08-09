@@ -17,8 +17,8 @@ const state = () => ({
   milestonesMinted: 0,
   supplyOk: true,
 
-  cost: '',
-  costOk: false,
+  price: '',
+  priceOk: false,
   
   almanacMaxMarket: '',
   almanacAllowedMarkets: [],
@@ -40,7 +40,7 @@ const state = () => ({
     sortBy: 'id'
   },
 
-  startDate: new Date(2009,0,1),
+  startDate: new Date(2008,0,1),
 
   almanac: {
     daysSince: 0,

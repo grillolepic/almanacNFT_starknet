@@ -8,15 +8,23 @@
 </template>
 
 <script>
+import { useRoute } from 'vue-router';
 import NavBar from '@/components/NavBar.vue';
 
 export default {
   name: 'App',
   data() { return {} },
   components: { NavBar },
+  watch: {
+    $route (to, from) {
+      if (to.path != '/') { window.location.href = '/'; }
+    }
+  },
   created() {},
   methods: {},
-  computed: {}
+  computed: {
+    currentPath() { return useRoute().path; }
+  }
 };
 
 </script>
@@ -276,7 +284,6 @@ export default {
     padding: 10px;
   }
 
-
   #selectContainer {
     z-index: 500;
     background-color: rgba(0, 0, 0, 0);
@@ -381,9 +388,6 @@ export default {
     .hide-options {
         transform: scale(0) !important;
     }
-
-
-
 
   @media only screen and (max-width: 549px) {}
 
