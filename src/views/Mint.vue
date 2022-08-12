@@ -127,7 +127,7 @@
             </div>
           </div>
           <div id="almanacConfig" v-else>
-              <div id="instructions" style="margin-top:50px;">Connect your StarkNet ArgentX Wallet to begin:</div>
+              <div id="instructions" style="margin-top:50px;">Connect your StarkNet Wallet to begin:</div>
               <div id="connectButton" class="button noSelect" @click="connectArgentX">
                 <span id="argentX" v-if="!argent.connected"></span>
                 connect
@@ -277,7 +277,7 @@ export default {
           console.log("CHANGING DATE AND MARKET");
           this.setAlmanac({
             market: index,
-            daysSince: minDate.diff(startingDate, 'days')
+            daysSince: minDate.diff(startingDate, 'days') + 1
           });
         } else {
           console.log("CHANGING MARKET");
@@ -290,16 +290,26 @@ export default {
         if (this.selectType == "day") {
           selectedDate.date(parseInt(this.selectOptions[index].name));       
         } else if (this.selectType == "month") {
+          console.log("changed month");
           selectedDate.month(this.selectOptions[index].value);
         } else if (this.selectType == "year") {
           selectedDate.year(this.selectOptions[index].name);
         }
 
+      let minDate = moment.utc(this.argent.markets[this.argent.almanac.market].minDate);
+
+        console.log(`Starting Date: ${startingDate}`);
+        console.log(`Min Date: ${minDate}`);
+        console.log(`Selected Date: ${selectedDate}`);
+
         if (selectedDate.isSameOrAfter(currentDate)) {
-          selectedDate = currentDate
+          selectedDate = currentDate;
         }
         if (selectedDate.isSameOrBefore(startingDate)) {
-          selectedDate = startingDate
+          selectedDate = startingDate;
+        }
+        if (selectedDate.isSameOrBefore(minDate)) {
+          selectedDate = minDate.add(1, 'days');
         }
         
         this.setAlmanac({
@@ -318,7 +328,7 @@ export default {
     },
 
     printTxStatus: function(event) {
-      if (this.argent.transaction.status == 0) { return "Waiting for ArgentX"; }
+      if (this.argent.transaction.status == 0) { return "Waiting for Wallet"; }
       if (this.argent.transaction.status == 1) { return "Waiting for confirmation"; }
       if (this.argent.transaction.status == 2) { return "Done!"; }
       if (this.argent.transaction.status == -1) { return "Transaction failed!"; }
@@ -504,7 +514,7 @@ export default {
   #mintButton {
     margin-top: 40px;
     margin-bottom: 40px;
-    height: 60px;
+    height: 80px;
     width: 610px;
     font-size: 40px;
     padding: 20px 0px 5px 0px;

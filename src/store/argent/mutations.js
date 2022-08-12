@@ -38,6 +38,9 @@ export default {
       state.supplyOk = value;
     },
 
+    enabled: function (state, value) {
+      state.enabled = value;
+    },
 
     price: function (state, value) {
       state.price = value;

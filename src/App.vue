@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
 import { useRoute } from 'vue-router';
 import NavBar from '@/components/NavBar.vue';
 
@@ -17,16 +18,16 @@ export default {
   components: { NavBar },
   watch: {
     $route (to, from) {
-      if (to.path != '/') { window.location.href = '/'; }
+      if (to.path != '/' && !this.argent.enabled) { window.location.href = '/'; }
     }
   },
   created() {},
   methods: {},
-  computed: {
+  computed: mapState({
+    argent: (state) => state.argent,
     currentPath() { return useRoute().path; }
-  }
+  })
 };
-
 </script>
 
 <style>

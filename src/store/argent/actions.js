@@ -8,8 +8,8 @@ let STARKNET = null;
 let ADDRESS = null;
 let NETWORK_NAME = null;
 let NETWORK_OK= null;
-let COST = 0;
-let COST_BN = null;
+let PRICE = 0;
+let PRICE_BN = null;
 let BALANCE = 0;
 
 let PUBLIC_SUPPLY = 0;
@@ -41,16 +41,15 @@ const ETHER_ABI = require('./Ether.json');
 let ETHER_CONTRACT = null;
 
 const MAINNET_ALMANAC_ADDRESS = "0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a";
-const GOERLI_ALMANAC_ADDRESS = "0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a";
+const GOERLI_ALMANAC_ADDRESS = "0x05b8f9d4e684e4c7b703c1ada3fd88a2aceb9b2d73d96a4b035499aaa12afeb0";
 const ALMANAC_ABI = require('./Almanac.json');
 let ALMANAC_CONTRACT = null;
 
 let almanacAvailable = false;
 let almanacDataAvailable = false;
 
-const MAX_PUBLIC_SUPPLY = 9000;
+const MAX_PUBLIC_SUPPLY = 9950;
 let supplyOk = false;
-
 let priceOk = false;
 
 let LAST_ALMANAC_INPUT = { market: 0, daysSince: 0 };
@@ -64,13 +63,11 @@ async function getMarkets(context) {
     console.log("getMarkets()");
     try {
       let marketsReq = await axios.get(`https://server.almanacnft.xyz/almanac/markets`);
-      MARKETS = marketsReq.data
-      console.log(MARKETS);
+      MARKETS = marketsReq.data;
       context.commit('markets', MARKETS);
       context.commit('serverError', false);
     } catch (err) {
       console.log(" - Couldn't fetch markets!");
-      console.log(err);
       context.commit('markets', []);
       context.commit('serverError', true);
     }
@@ -83,7 +80,7 @@ async function downloadAlmanacs(context) {
     ALL_ALMANACS = [];
 
     for (let i=0; i<10; i++) {
-        let almanacsReq = await axios.get(`https://server.almanacnft.xyz/almanac/getAll/${(NETWORK_NAME == 'mainnet-alpha')?'starknet':'starknet_goerli'}/${i}`);
+        let almanacsReq = await axios.get(`https://server.almanacnft.xyz/almanac/getAll/${(NETWORK_NAME?.includes('mainnet'))?'starknet':'starknet_goerli'}/${i}`);
         ALL_ALMANACS = ALL_ALMANACS.concat(almanacsReq.data);
         if (almanacsReq.data.length < PAGE_SIZE) { break; }
     }
@@ -97,7 +94,7 @@ async function downloadAlmanacs(context) {
 const init = async function (context) {
     await getMarkets(context);
     await downloadAlmanacs(context);
-    STARKNET = await connect({ showList: false, include:["argentX"] })
+    STARKNET = await connect({ showList: false }) //include:["argentX"]
     await STARKNET?.enable();
     if (STARKNET?.isConnected) {
         login(context);
@@ -106,10 +103,9 @@ const init = async function (context) {
 }
 
 const startDate = function (context) {
-    let startingDate = moment.utc(new Date(2009,0,1));
+    let startingDate = moment.utc(new Date(2008,0,1));
     let currentDate = moment.utc().subtract(1, 'day');
     let currentDaysSince = currentDate.diff(startingDate, 'days');
-    console.log("starting almanac date");
     setAlmanac(context, {
         daysSince: currentDaysSince,
         market: 0
@@ -167,7 +163,7 @@ const filterAlmanacs = function (context, settings = {}) {
 
 const connectArgentX = async function (context) {
     STARKNET = await connect({
-        include: ["argentX"],
+        //include: ["argentX"],
         modalOptions: {theme: 'dark'}
     });
     await STARKNET?.enable()
@@ -233,7 +229,8 @@ const login = async function (context) {
             loadUserAlmanacs(context);
             downloadAlmanacs(context);
 
-            await updateCost(context);
+            await updateEnabled(context);
+            await updatePrice(context);
             await updateTotalSupply(context);
             await updateBalance(context);
         }
@@ -243,6 +240,17 @@ const login = async function (context) {
     } else {
         logout();
     }
+}
+
+async function updateEnabled(context) {
+    if (!STARKNET) {
+        return context.commit("enabled", false);
+    }
+
+    console.log("Finding if Almanac is Enabled....");
+    let response = await ALMANAC_CONTRACT.isEnabled();
+    let isEnabled = (response.enabled.toNumber() > 0);
+    context.commit('enabled', isEnabled);
 }
 
 async function updateBalance(context) {
@@ -255,7 +263,7 @@ async function updateBalance(context) {
     BALANCE = parseFloat(formatEther(response.balance));
     context.commit('balance', BALANCE);
 
-    priceOk = (COST <= BALANCE);
+    priceOk = (PRICE <= BALANCE);
     context.commit('priceOk', priceOk);
 }
 
@@ -288,15 +296,15 @@ async function updateTotalSupply(context) {
     }
 }
   
-async function updateCost(context) {
+async function updatePrice(context) {
     try {
         if (STARKNET) {
             console.log("Finding Almanac price....");
-            let response = await ALMANAC_CONTRACT.getCost();
-            COST_BN = response.price;
-            COST = parseFloat(formatEther(response.price));
-            context.commit('price', COST);
-            priceOk = (COST <= BALANCE);
+            let response = await ALMANAC_CONTRACT.getPrice();
+            PRICE_BN = response.price;
+            PRICE = parseFloat(formatEther(response.price));
+            context.commit('price', PRICE);
+            priceOk = (PRICE <= BALANCE);
         } else {
             context.commit('price', null);
             priceOk = false;
@@ -304,14 +312,14 @@ async function updateCost(context) {
         }
         context.commit('priceOk', priceOk);
     } catch (err) {
-        COST_BN = null;
+        PRICE_BN = null;
     }
 }
 
 const logout = async function (context) {
     INIT = false;
     BALANCE = 0;
-    COST = 0;
+    PRICE = 0;
     priceOk = false;
     context.commit('price', null);
     context.commit('priceOk', priceOk);
@@ -336,7 +344,12 @@ async function loadUserAlmanacs(context) {
     context.commit("userAlmanacs", USER_ALMANACS);
 
     try {
-        let almanacsReq = await axios.get(`https://api-testnet.aspect.co/assets?owner_address=${ADDRESS}&contract_address=${(NETWORK_NAME == 'mainnet-alpha')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS}`);
+        let almanacsReq;
+        if (NETWORK_NAME?.includes('mainnet-alpha')) {
+            almanacsReq = await axios.get(`https://api.aspect.co/assets?owner_address=${ADDRESS}&contract_address=${MAINNET_ALMANAC_ADDRESS}`);
+        } else {
+            almanacsReq = await axios.get(`https://api-testnet.aspect.co/assets?owner_address=${ADDRESS}&contract_address=${GOERLI_ALMANAC_ADDRESS}`);
+        }
         for (let i=0; i<almanacsReq.data.length; i++) {
             USER_ALMANACS.push(parseInt(almanacsReq.data[i].token_id));
         }
@@ -351,7 +364,7 @@ async function loadUserAlmanacs(context) {
             if (!USER_ALMANACS.includes(id)) {
                 USER_ALMANACS.push(id);
                 context.commit("userAlmanacs", USER_ALMANACS);
-                filterAlmanacs(context)
+                filterAlmanacs(context);
             }
         }
     }
@@ -431,16 +444,16 @@ async function mintAlmanac(context) {
     context.commit('transactionStatus', 0);
     
     try {
-        await updateCost(context);
+        await updatePrice(context);
 
-        if (COST_BN != null) {
+        if (PRICE_BN != null) {
 
             let approveCall = {
-                contractAddress: GOERLI_ETHER_ADDRESS,
+                contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ETHER_ADDRESS:GOERLI_ETHER_ADDRESS,
                 entrypoint: "approve",
                 calldata: [
-                    GOERLI_ALMANAC_ADDRESS,
-                    uint256.uint256ToBN(COST_BN).toString(),
+                    NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
+                    uint256.uint256ToBN(PRICE_BN).toString(),
                     0
                 ],
             };
@@ -448,11 +461,11 @@ async function mintAlmanac(context) {
             let mintCall = {
                 contractAddress: GOERLI_ALMANAC_ADDRESS,
                 entrypoint: "publicMint",
-                calldata: [ALMANAC_INPUT.market, ALMANAC_INPUT.daysSince],
+                calldata: [ALMANAC_INPUT.market, ALMANAC_INPUT.daysSince, 0],
             };
     
             let result = await STARKNET.account.execute([approveCall, mintCall]);
-            context.commit("transactionLink", `https://${(NETWORK_NAME == 'mainnet-alpha')?'':'goerli.'}voyager.online/tx/${result.transaction_hash}`);
+            context.commit("transactionLink", `https://${(NETWORK_NAME?.includes('mainnet'))?'':'goerli.'}voyager.online/tx/${result.transaction_hash}`);
             context.commit('transactionStatus', 1);
             await STARKNET.provider.waitForTransaction(result.transaction_hash);
             context.commit('transactionStatus', 2);

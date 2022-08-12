@@ -21,8 +21,8 @@
           
         </div>
       </div>
-      <div id="mainnet">MAINNET SOON</div>
-      <!--router-link :to="'/mint'"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link-->
+      <div id="mainnet" v-if="!argent.enabled">MAINNET SOON</div>
+      <router-link :to="'/mint'" v-if="argent.enabled"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link>
 
       <!--div id="tradeOn">
           <div class="tradeOnText noSelect">trade on</div>
@@ -196,16 +196,21 @@
 </template>
 
 <script>
-  export default {
-    name: 'Home',
-    data() { return {} },
-    methods: {
-      getMarketText(number) {
-       return ["BTC/USD","ETH/USD","ETH/BTC","ADA/USD","TRX/USD","MATIC/USD","DOT/USD","SOL/USD","LUNA/USD","AVAX/USD","LINK/USD","DOGE/USD","SHIB/USD","APE/USD"][number];
-      }
-    },
-    mounted() {}
-  }
+import { mapState, mapActions } from 'vuex';
+
+export default {
+  name: 'Home',
+  data() { return {} },
+  methods: {
+    getMarketText(number) {
+      return ["BTC/USD","ETH/USD","ETH/BTC","ADA/USD","TRX/USD","MATIC/USD","DOT/USD","SOL/USD","LUNA/USD","AVAX/USD","LINK/USD","DOGE/USD","SHIB/USD","APE/USD"][number];
+    }
+  },
+  mounted() {},
+  computed: mapState({
+    argent: (state) => state.argent
+  })
+}
 </script>
 
 <style scoped>
