@@ -31,7 +31,7 @@ let FILTER = {
 
 const PAGE_SIZE = 12;
 
-const supportedNetworks = ["goerli-alpha"]; //, "mainnet-alpha"];
+const supportedNetworks = ["mainnet-alpha"];
 
 const ARGENT_ABI = require('./ArgentAccount.json');
 
@@ -40,7 +40,7 @@ const GOERLI_ETHER_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b
 const ETHER_ABI = require('./Ether.json');
 let ETHER_CONTRACT = null;
 
-const MAINNET_ALMANAC_ADDRESS = "0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a";
+const MAINNET_ALMANAC_ADDRESS = "0x07d4dc2bf13ede97b9e458dc401d4ff6dd386a02049de879ebe637af8299f91d";
 const GOERLI_ALMANAC_ADDRESS = "0x05b8f9d4e684e4c7b703c1ada3fd88a2aceb9b2d73d96a4b035499aaa12afeb0";
 const ALMANAC_ABI = require('./Almanac.json');
 let ALMANAC_CONTRACT = null;
@@ -94,7 +94,7 @@ async function downloadAlmanacs(context) {
 const init = async function (context) {
     await getMarkets(context);
     await downloadAlmanacs(context);
-    STARKNET = await connect({ showList: false }) //include:["argentX"]
+    STARKNET = await connect({ showList: false });
     await STARKNET?.enable();
     if (STARKNET?.isConnected) {
         login(context);
@@ -167,9 +167,7 @@ const connectArgentX = async function (context) {
         modalOptions: {theme: 'dark'}
     });
     await STARKNET?.enable()
-    if (STARKNET?.isConnected) {
-        login(context);
-    }
+    if (STARKNET?.isConnected) { login(context); }
 }
 
 function handleAccountsChanged(context, accounts) {
@@ -181,7 +179,7 @@ function handleAccountsChanged(context, accounts) {
 function getNetworkName() {
     if (!STARKNET) { return null; }
     const { baseUrl } = STARKNET.provider;
-    if (baseUrl.includes("alpha-mainnet.starknet.io")) {
+    if (baseUrl.includes("mainnet")) {
         return "mainnet-alpha";
     } else if (baseUrl.includes("alpha4.starknet.io")) {
         return "goerli-alpha";
@@ -345,7 +343,7 @@ async function loadUserAlmanacs(context) {
 
     try {
         let almanacsReq;
-        if (NETWORK_NAME?.includes('mainnet-alpha')) {
+        if (NETWORK_NAME?.includes('mainnet')) {
             almanacsReq = await axios.get(`https://api.aspect.co/assets?owner_address=${ADDRESS}&contract_address=${MAINNET_ALMANAC_ADDRESS}`);
         } else {
             almanacsReq = await axios.get(`https://api-testnet.aspect.co/assets?owner_address=${ADDRESS}&contract_address=${GOERLI_ALMANAC_ADDRESS}`);
@@ -555,7 +553,7 @@ const updateTitle = async function updateTitle(context, info) {
         }
 
         //Finally, I send the object to my server, 
-        let response = await axios.post(`https://server.almanacnft.xyz/almanac/updateTitle`,serverObject);
+        let response = await axios.post(`https://server.almanacnft.xyz/almanac/updateTitle`, serverObject);
 
         await downloadAlmanacs(context);
         await selectAlmanac(context, info.id);
@@ -590,7 +588,12 @@ const selectAlmanac = async function selectAlmanac(context, id) {
             } else {
 
                 try {
-                    let almanacsReq = await axios.get(`https://api-testnet.aspect.co/api/v0/asset/${(NETWORK_NAME == 'mainnet-alpha')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS}/${id}`);
+                    let almanacsReq;
+                    if (NETWORK_NAME?.includes('mainnet')) {
+                        almanacsReq = await axios.get(`https://api.aspect.co/api/v0/asset/${MAINNET_ALMANAC_ADDRESS}/${id}`);
+                    } else {
+                        almanacsReq = await axios.get(`https://api-testnet.aspect.co/api/v0/asset/${GOERLI_ALMANAC_ADDRESS}/${id}`);
+                    }
                     if (almanacsReq.data.owner?.account_address != undefined) {
                         context.commit('selectedAlmanacOwner', validateAndParseAddress(almanacsReq.data.owner.account_address));
                     }
