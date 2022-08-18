@@ -8,7 +8,7 @@
       <div id="exampleContainer">
         <div id="exampleVideo">
           <video autoplay id="landingVideo" muted>
-            <source src="https://spaces.irreparabile.xyz/almanac/frontend/landing.mp4" type="video/mp4">
+            <source src="https://spaces.irreparabile.xyz/almanac/frontend/landing_small.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -46,21 +46,21 @@
       <div id="typesContainer">
         <div class="almanacType">
           <video autoplay class="typeVideo" muted>
-            <source src="https://spaces.irreparabile.xyz/almanac/frontend/bull.mp4" type="video/mp4">
+            <source src="https://spaces.irreparabile.xyz/almanac/frontend/bull_small.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
           <div class="typeName"><span class="trasnp">Bullish Days</span> 🚀</div>
         </div>
         <div class="almanacType">
           <video autoplay class="typeVideo" muted>
-            <source src="https://spaces.irreparabile.xyz/almanac/frontend/bear.mp4" type="video/mp4">
+            <source src="https://spaces.irreparabile.xyz/almanac/frontend/bear_small.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
           <div class="typeName"><span class="trasnp">Bearish Days</span> 🐻</div>
         </div>
         <div class="almanacType">
           <video autoplay class="typeVideo" muted>
-            <source src="https://spaces.irreparabile.xyz/almanac/frontend/wtf.mp4" type="video/mp4">
+            <source src="https://spaces.irreparabile.xyz/almanac/frontend/wtf_small.mp4" type="video/mp4">
             Your browser does not support the video tag.
           </video>
           <div class="typeName"><span class="trasnp">WTF Days</span> 🤔</div>
@@ -73,7 +73,7 @@
       <div id="milestoneContainer">
         <div id="milestoneVideoContainer">
             <video autoplay class="milestoneVideo" muted>
-              <source src="https://spaces.irreparabile.xyz/almanac/frontend/bitcoin.mp4" type="video/mp4">
+              <source src="https://spaces.irreparabile.xyz/almanac/frontend/bitcoin_small.mp4" type="video/mp4">
               Your browser does not support the video tag.
             </video>
             <div class="milestoneInfo noSelect">milestone #1 commemorates the registration of the 'bitcoin.org' domain by satoshi nakamoto</div>
