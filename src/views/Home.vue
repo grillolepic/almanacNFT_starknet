@@ -99,7 +99,7 @@
         </div>
         <div class="qa">
           <div class="question noSelect">How much will Almanacs price?</div>
-          <div class="answer noSelect">Minting an Almanac will price 0.03 ETH</div>
+          <div class="answer noSelect">Minting an Almanac will price 0.01 ETH</div>
         </div>
         <div class="qa">
           <div class="question noSelect">Wen launch?</div>
