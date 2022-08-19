@@ -662,24 +662,43 @@ async function launch(context) {
             entrypoint: "setEnabled",
             calldata: [ 1 ],
         };
-
         let mintCall_0 = {
             contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
             entrypoint: "publicMint",
-            calldata: [0, 3000, almanac_treasury],
+            calldata: [0, 5062, almanac_treasury],
         };
         let mintCall_1 = {
             contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
             entrypoint: "publicMint",
-            calldata: [0, 3001, almanac_treasury],
+            calldata: [1, 4807, almanac_treasury],
         };
         let mintCall_2 = {
             contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
             entrypoint: "publicMint",
-            calldata: [1, 3000, almanac_treasury],
+            calldata: [12, 5048, almanac_treasury],
+        };
+        let mintCall_3 = {
+            contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
+            entrypoint: "publicMint",
+            calldata: [1, 4751, almanac_treasury],
+        };
+        let mintCall_4 = {
+            contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
+            entrypoint: "publicMint",
+            calldata: [1, 5062, almanac_treasury],
+        };
+        let mintCall_5 = {
+            contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
+            entrypoint: "publicMint",
+            calldata: [2, 5277, almanac_treasury],
+        };
+        let mintCall_6 = {
+            contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
+            entrypoint: "publicMint",
+            calldata: [0, 4502, almanac_treasury],
         };
     
-        let result = await STARKNET.account.execute([enableCall, mintCall_0, mintCall_1, mintCall_2]);
+        let result = await STARKNET.account.execute([enableCall, mintCall_0, mintCall_1, mintCall_2, mintCall_3, mintCall_4, mintCall_5, mintCall_6]);
         context.commit("transactionLink", `https://${(NETWORK_NAME?.includes('mainnet'))?'':'goerli.'}voyager.online/tx/${result.transaction_hash}`);
         context.commit('transactionStatus', 1);
         await STARKNET.provider.waitForTransaction(result.transaction_hash);
