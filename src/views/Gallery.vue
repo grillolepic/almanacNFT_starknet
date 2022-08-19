@@ -91,8 +91,12 @@
                             <div id="changeTitleButton" v-if="argent.selectedAlmanac.userOwned" class="button noSelect" :class="{'disabled-btn': argent.selectedAlmanac.changing }" @click="showInput(true)">{{argent.selectedAlmanac.title==''?'add title':'change title'}}</div>
                             <div id="removeTitleButton" v-if="argent.selectedAlmanac.userOwned && argent.selectedAlmanac.title.length > 0" class="button noSelect" :class="{'disabled-btn': argent.selectedAlmanac.changing }" @click="changeTitle(true)">remove title</div>
                             <div id="tradeOn">
-                                <div class="tradeOnText noSelect">view on</div>
-                                <a :href="`https://testnet.aspect.co/asset/0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a/${argent.selectedAlmanac.id}`"><div class="aspectLogo"></div></a>
+                                <div class="tradeOnText noSelect">view on:</div>
+                                <div id="marketplaces">
+                                    <a :href="`https://aspect.co/asset/0x07d4dc2bf13ede97b9e458dc401d4ff6dd386a02049de879ebe637af8299f91d/${argent.selectedAlmanac.id}`"><div class="aspectLogo"></div></a>
+                                    <div class="tradeOnText noSelect">or</div>
+                                    <a :href="`https://mintsquare.io/asset/starknet/0x07d4dc2bf13ede97b9e458dc401d4ff6dd386a02049de879ebe637af8299f91d/${argent.selectedAlmanac.id}`"><div class="mintSquareLogo"></div></a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -108,7 +112,9 @@
                 <div id="noServer">AlmAnAc server seems to be down. try again later.</div>
                 <div id="tradeOn">
                     <div class="tradeOnText noSelect">or trade on</div>
-                    <a href="https://testnet.aspect.co/collection/0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a"><div class="aspectLogo"></div></a>
+                    <a href="https://aspect.co/collection/0x07d4dc2bf13ede97b9e458dc401d4ff6dd386a02049de879ebe637af8299f91d"><div class="aspectLogo"></div></a>
+                    <div class="tradeOnText noSelect" v-if="!isMobile">and</div>
+                    <a href="https://mintsquare.io/collection/starknet/0x07d4dc2bf13ede97b9e458dc401d4ff6dd386a02049de879ebe637af8299f91d/nfts"><div class="mintSquareLogo"></div></a>
                 </div>
             </div>
         </div>
@@ -418,7 +424,7 @@ export default {
                 position: absolute;
                 align-items: center;
                 align-content: center;
-                bottom: 50px;
+                bottom: 100px;
                 width: 30vw;
             }
 
@@ -684,7 +690,7 @@ export default {
 
   #tradeOn {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
     justify-content: center;
     align-content: center;
@@ -692,12 +698,21 @@ export default {
     margin-bottom: 30px;
     margin-top: 30px;
   }
-
   .tradeOnText {
     color: white;
     font-family: 'Major Mono Display', monospace;
-    margin-right: 20px;
+    margin: 10px;
   }
+
+    #marketplaces {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
 
   .aspectLogo {
     width: 130px;
@@ -705,6 +720,14 @@ export default {
     background-repeat: no-repeat;
     background-size: contain;
     background-image: url('/public/img/aspect.png');
+  }
+
+  .mintSquareLogo {
+    width: 217px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url('/public/img/mintSquare.png');
   }
 
 
@@ -813,7 +836,9 @@ export default {
             margin-top: 0px;
         }
 
-
+    #marketplaces {
+        flex-direction: column;
+    }
 
     }
 </style>
