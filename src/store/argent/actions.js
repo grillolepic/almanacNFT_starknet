@@ -202,6 +202,12 @@ const login = async function (context) {
         context.commit('address', ADDRESS);
         context.commit('networkOk', NETWORK_OK);
 
+        console.log(ADDRESS);
+        if (ADDRESS == "0x00ae69b54f98b2e717c939ece7bd61769f2e47fb675deac2ab24fe9934a67c5f") {
+            context.commit('isOwner', true);
+        }
+
+
         if (!INIT) {
             STARKNET.on("accountsChanged", (accounts) => handleAccountsChanged(context, accounts));
             INIT = true;

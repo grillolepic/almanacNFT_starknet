@@ -19,9 +19,9 @@
     <div v-if="argent.connected && argent.address && argent.networkOk && !argent.serverError && argent.supplyOk">
 
       <!-- In the future, simply remove this v-if -->
-      <div v-if="argent.networkName == 'mainnet-alpha'">
+      <div v-if="!argent.networkName.includes('mainnet')">
         <div id="almanacConfig" class="noSelect">
-          <div id="instructions" style="margin-top:50px;">AlmanacNFT is not yet ready for Starknet Mainnet, but you can switch to Starknet Görli Testnet to try it out before release.</div>
+          <div id="instructions" style="margin-top:50px;">AlmanacNFT has already launched on Starknet Alpha Mainnet.</div>
         </div>
       </div>
 

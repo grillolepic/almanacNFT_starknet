@@ -24,10 +24,12 @@
       <div id="mainnet" v-if="!argent.enabled">MAINNET SOON</div>
       <router-link :to="'/mint'" v-if="argent.enabled"><div id="mintNowButton" class="button noSelect">mint yours now</div></router-link>
 
-      <!--div id="tradeOn">
+      <div id="tradeOn" v-if="argent.enabled">
           <div class="tradeOnText noSelect">trade on</div>
-          <a href="https://testnet.aspect.co/collection/0x0175e2980c223827a8d5d616b81f5613b3f0cc22798686726ab29ad17b05dc4a"><div class="aspectLogo"></div></a>
-      </div-->
+          <a href="https://aspect.co/collection/0x07d4dc2bf13ede97b9e458dc401d4ff6dd386a02049de879ebe637af8299f91d"><div class="aspectLogo"></div></a>
+          <div class="tradeOnText noSelect" v-if="!isMobile">and</div>
+          <a href="https://mintsquare.io/collection/starknet/0x07d4dc2bf13ede97b9e458dc401d4ff6dd386a02049de879ebe637af8299f91d/nfts"><div class="mintSquareLogo"></div></a>
+      </div>
     </div>
 
     <div id="secondSection">
@@ -197,9 +199,14 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
+import useBreakpoints from '../helpers/useBreakpoints';
 
 export default {
   name: 'Home',
+  setup(props) {
+        const { width, height, type } = useBreakpoints();
+        return { width, type };
+    },
   data() { return {} },
   methods: {
     getMarketText(number) {
@@ -208,7 +215,10 @@ export default {
   },
   mounted() {},
   computed: mapState({
-    argent: (state) => state.argent
+    argent: (state) => state.argent,
+    isMobile: function () {
+      return (this.type != 'lg');
+    }
   })
 }
 </script>
@@ -329,6 +339,7 @@ export default {
     color: white;
     font-family: 'Major Mono Display', monospace;
     margin-right: 20px;
+    margin-left: 20px;
   }
 
   .aspectLogo {
@@ -337,6 +348,14 @@ export default {
     background-repeat: no-repeat;
     background-size: contain;
     background-image: url('/public/img/aspect.png');
+  }
+
+  .mintSquareLogo {
+    width: 217px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url('/public/img/mintSquare.png');
   }
 
 
@@ -712,6 +731,18 @@ export default {
         margin: 0px;
       }
 
+
+    #tradeOn {
+      flex-direction: column;
+    }
+
+    .tradeOnText {
+      margin-bottom: 20px;
+    }
+
+    .mintSquareLogo {
+      margin-top: 10px;
+    }
   }
 
 
@@ -766,14 +797,23 @@ export default {
           width: 270px;
     }
 
+  #tradeOn {
+    flex-direction: column;
+  }
+
   .tradeOnText {
-    font-size: 12px;
-    margin-right: 20px;
+    margin-bottom: 20px;
   }
 
   .aspectLogo {
-    width: 80px;
-    height: 30px;
+    width: 160px;
+    height: 60px;
+  }
+
+  .mintSquareLogo {
+    width: 260px;
+    height: 60px;
+    margin-top: 20px;
   }
 
     .marketsInfo {

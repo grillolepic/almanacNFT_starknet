@@ -41,6 +41,10 @@ export default {
     enabled: function (state, value) {
       state.enabled = value;
     },
+    isOwner: function (state, value) {
+      state.isOwner = value;
+    },
+
 
     price: function (state, value) {
       state.price = value;

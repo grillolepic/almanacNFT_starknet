@@ -4,7 +4,7 @@
 
         <router-link :to="'/mint'"><span class="link noSelect" :class="{ 'selected': currentPath == '/mint' }" v-if="!isMobile && argent.enabled">mint</span></router-link>
         <router-link :to="'/gallery'"><span class="link noSelect" :class="{ 'selected': currentPath == '/gallery' }" v-if="!isMobile && argent.enabled">gallery</span></router-link>
-        <!--router-link :to="'/milestones'"><span class="link" :class="{ 'selected': currentPath == '/milestones' }" v-if="!isMobile">milestones</span></router-link-->
+        <router-link :to="'/owner'"><span class="link" :class="{ 'selected': currentPath == '/owner' }" v-if="argent.isOwner">owner</span></router-link>
         <!--router-link :to="'/FAQ'"><span class="link" :class="{ 'selected': currentPath == '/FAQ' }" v-if="!isMobile">faq</span></router-link-->
 
         <div id="ConnectButton" class="button noSelect" :class="{ 'orange-btn': argent.connected && argent.address && !argent.networkOk, 'green-btn': argent.connected && argent.address && argent.networkOk }" @click="toggleConnect" v-if="!isMobile">

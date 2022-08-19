@@ -18,6 +18,7 @@ const state = () => ({
   supplyOk: true,
 
   enabled: false,
+  isOwner: false,
 
   price: '',
   priceOk: false,
