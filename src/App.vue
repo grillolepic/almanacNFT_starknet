@@ -18,6 +18,7 @@ export default {
   components: { NavBar },
   watch: {
     $route (to, from) {
+      if (to.path == '/owner' && this.argent.isOwner) { return; }
       if (to.path != '/' && !this.argent.enabled) { window.location.href = '/'; }
     }
   },

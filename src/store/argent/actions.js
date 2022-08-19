@@ -463,7 +463,7 @@ async function mintAlmanac(context) {
             };
     
             let mintCall = {
-                contractAddress: GOERLI_ALMANAC_ADDRESS,
+                contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
                 entrypoint: "publicMint",
                 calldata: [ALMANAC_INPUT.market, ALMANAC_INPUT.daysSince, 0],
             };
@@ -650,6 +650,49 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+
+async function launch(context) {
+    context.commit('transactionStatus', 0);
+    
+    let almanac_treasury = "0x0528e38bD7ac658EEAbdd45f8cd90e1dd59c65f0918A65713CfEfB4a6093340D";
+
+    try {
+        let enableCall = {
+            contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
+            entrypoint: "setEnabled",
+            calldata: [ 1 ],
+        };
+
+        let mintCall_0 = {
+            contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
+            entrypoint: "publicMint",
+            calldata: [0, 3000, almanac_treasury],
+        };
+        let mintCall_1 = {
+            contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
+            entrypoint: "publicMint",
+            calldata: [0, 3001, almanac_treasury],
+        };
+        let mintCall_2 = {
+            contractAddress: NETWORK_NAME?.includes('mainnet')?MAINNET_ALMANAC_ADDRESS:GOERLI_ALMANAC_ADDRESS,
+            entrypoint: "publicMint",
+            calldata: [1, 3000, almanac_treasury],
+        };
+    
+        let result = await STARKNET.account.execute([enableCall, mintCall_0, mintCall_1, mintCall_2]);
+        context.commit("transactionLink", `https://${(NETWORK_NAME?.includes('mainnet'))?'':'goerli.'}voyager.online/tx/${result.transaction_hash}`);
+        context.commit('transactionStatus', 1);
+        await STARKNET.provider.waitForTransaction(result.transaction_hash);
+        context.commit('transactionStatus', 2);
+        context.commit('almanacAvailable', false);
+
+    } catch (err) {
+        console.log(err);
+        context.commit('transactionError', "Unknown error");
+        context.commit('transactionStatus', -1);
+    }
+}
+
 export default {
     init,
     logout,
@@ -664,6 +707,8 @@ export default {
     selectAlmanac,
     resetSelectedAlmanac,
     updateTitle,
+
+    launch,
 
     resetCurrentAlmanac,
     resetTransaction

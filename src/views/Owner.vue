@@ -4,7 +4,7 @@
     <div v-if="argent.connected && argent.address && argent.networkOk && argent.isOwner">
         <div id="spinner" v-if="argent.initialLoading"></div>
         <div v-else>
-
+            <div id="launchButton" class="button noSelect" @click="launch">launch</div>
         </div>
     </div>
   </div>
@@ -20,7 +20,7 @@ export default {
   mounted: function() {},
   components: {},
   methods: {
-    ...mapActions('argent', []),
+    ...mapActions('argent', ['launch']),
   },
   computed: mapState({
       argent: (state) => state.argent,
@@ -29,4 +29,16 @@ export default {
 </script>
 
 <style scoped>
+  #launchButton {
+    margin-top: 100px;
+    width: 290px;
+    font-size: 40px;
+    padding: 25px;
+    margin-bottom: 20px;
+  }
+
+    #launchButton:after {
+      margin: 8px;
+
+    }
 </style>
