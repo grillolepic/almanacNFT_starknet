@@ -201,6 +201,8 @@ const login = async function (context) {
         context.commit('connected', true);
         context.commit('address', ADDRESS);
         context.commit('networkOk', NETWORK_OK);
+        context.commit('networkName', NETWORK_NAME);
+
 
         console.log(ADDRESS);
         if (ADDRESS == "0x00ae69b54f98b2e717c939ece7bd61769f2e47fb675deac2ab24fe9934a67c5f") {
