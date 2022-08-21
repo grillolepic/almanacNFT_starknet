@@ -17,7 +17,7 @@ const state = () => ({
   milestonesMinted: 0,
   supplyOk: true,
 
-  enabled: false,
+  enabled: true,
   isOwner: false,
 
   price: '',

@@ -105,7 +105,7 @@
         </div>
         <div class="qa">
           <div class="question noSelect">Wen launch?</div>
-          <div class="answer noSelect">We plan to launch on mainnet very soon. Stay tuned.</div>
+          <div class="answer noSelect">We are live on StarkNet Alpha Mainnet!</div>
         </div>
         <div class="qa">
           <div class="question noSelect">Will I lose my Almanacs in case of a StarkNet state reset?</div>
