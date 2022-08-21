@@ -166,11 +166,11 @@ export default {
         },
 
         videoLink: function() {
-            return `https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/video/${String(this.argent.selectedAlmanac.id).padStart(5,"0")}.mp4`;
+            return `https://spaces.irreparabile.xyz/almanac/starknet/video/${String(this.argent.selectedAlmanac.id).padStart(5,"0")}.mp4`;
         },
 
         almanacStyle: function(index) {
-        let style = `background-image: url("https://spaces.irreparabile.xyz/almanac/${this.argent.networkName == 'mainnet-alpha'?'starknet':'starknet_goerli'}/image/${String(this.argent.filteredAlmanacs[index].id).padStart(5,"0")}.png");`;
+        let style = `background-image: url("https://spaces.irreparabile.xyz/almanac/starknet/image/${String(this.argent.filteredAlmanacs[index].id).padStart(5,"0")}.png");`;
         return style;
         },
 

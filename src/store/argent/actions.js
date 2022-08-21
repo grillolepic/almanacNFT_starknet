@@ -6,7 +6,7 @@ import { Contract, number, uint256, validateAndParseAddress, hash } from "starkn
 let INIT = false;
 let STARKNET = null;
 let ADDRESS = null;
-let NETWORK_NAME = null;
+let NETWORK_NAME = "mainnet-alpha";
 let NETWORK_OK= null;
 let PRICE = 0;
 let PRICE_BN = null;
