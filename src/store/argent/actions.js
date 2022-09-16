@@ -402,42 +402,62 @@ const setAlmanac = async function setAlmanac(context, almanacConfig) {
         context.commit('almanacQueryingDataAvailable', true);
         context.commit('almanacWaitingInput', true);   
 
-        clearTimeout(DATA_INPUT_TIMEOUT);
-        DATA_INPUT_TIMEOUT = setTimeout(async () => {
-            
-            context.commit('almanacMarket', ALMANAC_INPUT.market);
-            context.commit('almanacDaysSince', ALMANAC_INPUT.daysSince);
+        let blockMilestone = false;
 
-            LAST_ALMANAC_INPUT.market = ALMANAC_INPUT.market;
-            LAST_ALMANAC_INPUT.daysSince = ALMANAC_INPUT.daysSince;
-
-            context.commit('almanacWaitingInput', false);
-
-            almanacAvailable = false;
-            almanacDataAvailable = false;
-
-            if (ALMANAC_CONTRACT != null) {
-                try {
-                    let response = await ALMANAC_CONTRACT.getAlmanac({market: ALMANAC_INPUT.market, day: ALMANAC_INPUT.daysSince});
-                    let almanacId = uint256.uint256ToBN(response.almanacId).toNumber();
-                    if (almanacId == 0) { almanacAvailable = true; }
-                } catch (err) {}
-                context.commit('almanacQueryingAvailable', false);
-                context.commit('almanacAvailable', almanacAvailable);
-            }
+        MILESTONES = [[0,277],[0,304],[0,368],[0,377],[0,981],[0,1025],[0,1039],[0,1096],[0,1135],[0,1207],[0,1254],[0,1416],[0,1498],[0,1792],[1,2157],[0,2178],[0,2256],[1,2282],[1,2349],[1,2394],
+                      [1,2767],[1,2806],[1,3090],[0,3112],[1,3123],[1,3411],[1,3461],[0,3500],[1,3619],[1,3639],[1,3958],[1,4210],[0,4514],[1,4550],[1,4581],[0,4606],[1,4623],[1,4643],[1,4718],[1,4761],
+                      [1,4965],[1,4966],[0,4998],[1,5080],[1,5333],[1,5371]];
         
-            if (almanacAvailable) {
-                try { 
-                    console.log("Trying to obtain data....");
-                    let reqDataAvailable = await axios.get(`https://server.almanacnft.xyz/almanac/dataAvailable/${ALMANAC_INPUT.market}/${ALMANAC_INPUT.daysSince}`);
-                    if (reqDataAvailable.data) {
-                    almanacDataAvailable = reqDataAvailable.data.available;
-                    }
-                } catch (err) {}
-            }
-            context.commit('almanacQueryingDataAvailable', false); 
-            context.commit('almanacDataAvailable', almanacDataAvailable);
-        }, INPUT_DELAY);
+        for (let i=0; i<MILESTONES.length; i++) {
+            if (ALMANAC_INPUT.market == MILESTONES[i][0] &&
+                ALMANAC_INPUT.daysSince == MILESTONES[i][1]) {
+                    blockMilestone = true;
+        }}
+
+        if (blockMilestone) {
+            context.commit('almanacAvailable', false);
+            context.commit('almanacDataAvailable', false);
+            context.commit('almanacQueryingAvailable', false);
+            context.commit('almanacQueryingDataAvailable', false);
+            context.commit('almanacWaitingInput', false);  
+        } else {
+            clearTimeout(DATA_INPUT_TIMEOUT);
+            DATA_INPUT_TIMEOUT = setTimeout(async () => {
+                
+                context.commit('almanacMarket', ALMANAC_INPUT.market);
+                context.commit('almanacDaysSince', ALMANAC_INPUT.daysSince);
+
+                LAST_ALMANAC_INPUT.market = ALMANAC_INPUT.market;
+                LAST_ALMANAC_INPUT.daysSince = ALMANAC_INPUT.daysSince;
+
+                context.commit('almanacWaitingInput', false);
+
+                almanacAvailable = false;
+                almanacDataAvailable = false;
+
+                if (ALMANAC_CONTRACT != null) {
+                    try {
+                        let response = await ALMANAC_CONTRACT.getAlmanac({market: ALMANAC_INPUT.market, day: ALMANAC_INPUT.daysSince});
+                        let almanacId = uint256.uint256ToBN(response.almanacId).toNumber();
+                        if (almanacId == 0) { almanacAvailable = true; }
+                    } catch (err) {}
+                    context.commit('almanacQueryingAvailable', false);
+                    context.commit('almanacAvailable', almanacAvailable);
+                }
+            
+                if (almanacAvailable) {
+                    try { 
+                        console.log("Trying to obtain data....");
+                        let reqDataAvailable = await axios.get(`https://server.almanacnft.xyz/almanac/dataAvailable/${ALMANAC_INPUT.market}/${ALMANAC_INPUT.daysSince}`);
+                        if (reqDataAvailable.data) {
+                        almanacDataAvailable = reqDataAvailable.data.available;
+                        }
+                    } catch (err) {}
+                }
+                context.commit('almanacQueryingDataAvailable', false); 
+                context.commit('almanacDataAvailable', almanacDataAvailable);
+            }, INPUT_DELAY);
+        }
     }
 }
 
