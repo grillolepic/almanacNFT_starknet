@@ -86,25 +86,25 @@ function changePage(target) {
 }
 
 function showInput(visible) {
-  this.inputOpen = visible
+  inputOpen.value = visible
   if (visible) {
-    this.inputText = ''
+    inputText.value = ''
   }
 }
 
 function showSelect(visible, section = 'market') {
-  this.selectOpen = visible
+  selectOpen.value = visible
   if (visible) {
-    this.selectType = section
+    selectType.value = section
     if (section == 'market') {
       let options = [{ name: 'show all', value: 'all' }].concat(almanacStore.markets)
-      this.selectOptions = options
+      selectOptions.value = options
     }
   }
 }
 
 function isOptionSelected(index) {
-  if (this.selectType == 'market') {
+  if (selectType.value == 'market') {
     if (almanacStore.filter.market == null) {
       return index == 0
     } else {
@@ -121,17 +121,13 @@ function optionMarketIconStyle(index) {
 }
 
 function selectOption(index) {
-  if (this.selectType == 'market') {
+  if (selectType.value == 'market') {
     if (index == 0) {
       almanacStore.filterAlmanacs({ market: null })
     } else {
       almanacStore.filterAlmanacs({ market: index - 1 })
     }
   }
-}
-
-function goToLink(link) {
-  window.open(link)
 }
 
 async function changeTitle(remove) {
@@ -142,15 +138,15 @@ async function changeTitle(remove) {
     })
   }
 
-  if (this.inputText.length > 0 && !this.invalidCharacters) {
-    if (this.inputText.length > 65) {
-      this.inputText = this.inputText.substring(0, 65)
+  if (inputText.value.length > 0 && !invalidCharacters.value) {
+    if (inputText.value.length > 65) {
+      inputText.value = inputText.value.substring(0, 65)
     }
     await almanacStore.updateTitle({
       id: almanacStore.selectedAlmanac.id,
-      title: this.inputText
+      title: inputText.value
     })
-    this.showInput(false)
+    showInput(false)
   }
 }
 </script>
