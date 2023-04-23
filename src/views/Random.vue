@@ -3,6 +3,9 @@ import moment from 'moment'
 import { ref, computed, onMounted } from 'vue'
 import { useStarknetStore } from '@/store/starknet'
 import { useAlmanacStore } from '@/store/almanac'
+import useBreakpoints from '@/helpers/useBreakpoints';
+
+const { isMobile } = useBreakpoints()
 const starknetStore = useStarknetStore()
 const almanacStore = useAlmanacStore()
 
@@ -157,7 +160,7 @@ const randomDate = computed(() => {
               NFT!
             </div>
 
-            <div class="flex flex-center max-width" :class="{ row: false, column: true }">
+            <div class="flex flex-center max-width" :class="{ row: !isMobile, column: isMobile }">
               <div class="label noSelect market-label">Market:</div>
               <div
                 id="MarketSelect"
