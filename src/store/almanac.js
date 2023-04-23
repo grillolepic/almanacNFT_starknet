@@ -71,7 +71,8 @@ let _initialState = {
     },
 
     findingRandom: false,
-    randomMarket: 0
+    randomMarket: 0,
+    randomNotFound: false
 };
 
 export const useAlmanacStore = defineStore('almanac', {
@@ -121,18 +122,18 @@ export const useAlmanacStore = defineStore('almanac', {
         async loadUserAlmanacs() {
             console.log("almanac: loadUserAlmanacs()");
             if (!_starknetStore.isStarknetConnected || _almanacContract == null) { return null; }
-            
+
             this.$patch({
                 loadingUserAlmanacs: true,
                 userAlmanacs: []
             });
 
             let USER_ALMANACS = [];
-            
+
             let response = await _almanacContract.balanceOf(_starknetStore.address);
             let numberOfAlmanacs = Number(uint256.uint256ToBN(response.balance));
-        
-            for (let i=0; i<numberOfAlmanacs; i++) {
+
+            for (let i = 0; i < numberOfAlmanacs; i++) {
                 let idx = uint256.bnToUint256(i);
                 let response2 = await _almanacContract.tokenOfOwnerByIndex(_starknetStore.address, idx);
                 let id = Number(uint256.uint256ToBN(response2.tokenId));
@@ -142,13 +143,13 @@ export const useAlmanacStore = defineStore('almanac', {
                     this.filterAlmanacs();
                 }
             }
-        
+
             this.$patch({
                 loadingUserAlmanacs: false,
                 userAlmanacs: USER_ALMANACS
             });
         },
-        
+
         async downloadAlmanacs() {
             console.log("almanac: downloadAlmanacs()");
             const pageSize = 1000;
@@ -384,21 +385,21 @@ export const useAlmanacStore = defineStore('almanac', {
         },
 
         async updateTitle(info) {
-        
+
             this.selectedAlmanacChanging = true;
-            
+
             const titleRegex = new RegExp("^[a-zA-Z\ \'!?]{0,65}$");
-            let title = info.title.substring(0,65);
+            let title = info.title.substring(0, 65);
 
             if (!titleRegex.test(title)) { return; }
-        
+
             //First, I build an object with all the info I want the user to sign
             let objMessage = {
                 id: info.id,
                 title: title,
                 signer: _starknetStore.address
             };
-        
+
             //I then hash the object with starknet.js starknetKeccak()
             let strMessage = JSON.stringify(objMessage);
             let hashedMessage = num.toHex(hash.starknetKeccak(strMessage));
@@ -423,25 +424,25 @@ export const useAlmanacStore = defineStore('almanac', {
                     msg: hashedMessage
                 }
             };
-        
+
             try {
                 //I ask the user to sign the message
                 let signature = await _starknetStore.signMessage(signableMessage);
-        
+
                 //I build a new object with the original object, the signable message and the signature
                 let serverObject = {
                     objMessage,
                     signableMessage,
                     signature
                 }
-        
+
                 //Finally, I send the object to my server, 
                 await axios.post(`https://server.almanacnft.xyz/almanac/updateTitle`, serverObject);
-        
+
                 await this.downloadAlmanacs();
                 await this.selectAlmanac(info.id);
-            } catch (err) {}
-        
+            } catch (err) { }
+
             this.selectedAlmanacChanging = false;
         },
 
@@ -543,6 +544,7 @@ export const useAlmanacStore = defineStore('almanac', {
             this.$patch({
                 randomMarket: market,
                 findingRandom: true,
+                randomNotFound: false
             });
 
             try {
@@ -560,9 +562,13 @@ export const useAlmanacStore = defineStore('almanac', {
                             queryingDataAvailable: false,
                             waitingInput: false
                         });
+                    } else {
+                        this.randomNotFound = true;
                     }
                 }
-            } catch (err) { }
+            } catch (err) {
+                this.randomNotFound = true;
+            }
 
             this.findingRandom = false;
         },

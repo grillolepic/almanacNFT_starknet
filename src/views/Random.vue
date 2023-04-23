@@ -3,7 +3,7 @@ import moment from 'moment'
 import { ref, computed, onMounted } from 'vue'
 import { useStarknetStore } from '@/store/starknet'
 import { useAlmanacStore } from '@/store/almanac'
-import useBreakpoints from '@/helpers/useBreakpoints';
+import useBreakpoints from '@/helpers/useBreakpoints'
 
 const { isMobile } = useBreakpoints()
 const starknetStore = useStarknetStore()
@@ -137,15 +137,15 @@ const randomDate = computed(() => {
       v-if="
         starknetStore.connected &&
         starknetStore.address &&
-        starknetStore.networkOk &&
         !almanacStore.serverError &&
-        almanacStore.supplyOk
+        almanacStore.supplyOk &&
+        almanacStore.enabled
       "
     >
-      <div v-if="starknetStore.isStarknetTestnet">
+      <div v-if="starknetStore.isStarknetTestnet || !starknetStore.networkOk">
         <div id="almanacConfig" class="noSelect">
           <div id="instructions" style="margin-top: 50px">
-            AlmanacNFT has already launched on Starknet Alpha Mainnet and is no longer available on
+            AlmanacNFT has already launched on StarkNet Mainnet and is no longer available on
             testnet.
           </div>
         </div>
@@ -181,10 +181,14 @@ const randomDate = computed(() => {
             </div>
 
             <div v-if="!almanacStore.findingRandom" class="randomized flex flex-center row">
+
               <div id="marketIcon" class="noSelect" :style="selectMarketIconStyle"></div>
-              <div class="label-big noSelect">{{ randomDate }}</div>
+              <div class="label-big noSelect" v-if="!almanacStore.randomNotFound">{{ randomDate }}</div>
+              <div class="label-big noSelect" v-else>None found. Try again.</div>
+
               <div class="redo containNoRepeatCenter" @click="redoRandom()"></div>
             </div>
+
             <div class="inline-spinner" v-if="almanacStore.findingRandom"></div>
 
             <div
@@ -292,14 +296,14 @@ const randomDate = computed(() => {
           </div>
         </div>
         <div v-else>
-          <div v-if="starknetStore.connected">
+          <div v-if="starknetStore.connected && !almanacStore.enabled">
             <div id="almanacConfig">
               <div id="instructions" style="margin-top: 50px">
-                AlmanacNFT is currently running only on the StarknNet Görli Testnet.
+                AlmanacNFT is currently disabled for new mints.
               </div>
             </div>
           </div>
-          <div id="almanacConfig" v-else>
+          <div id="almanacConfig" v-else-if="!starknetStore.connected">
             <div id="instructions" style="margin-top: 50px">
               Connect your StarkNet Wallet to begin:
             </div>

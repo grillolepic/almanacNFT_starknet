@@ -402,7 +402,7 @@ async function changeTitle(remove) {
             <div class="tradeOnText noSelect">or trade on</div>
             <a :href="`${almanacStore.aspectUri}`"><div class="aspectLogo"></div></a>
             <div class="tradeOnText noSelect" v-if="!isMobile">and</div>
-            <a :href="`${mintsquareUri.aspectUri}/nfts`"><div class="mintSquareLogo"></div></a>
+            <a :href="`${almanacStore.mintsquareUri}/nfts`"><div class="mintSquareLogo"></div></a>
           </div>
         </div>
       </div>
@@ -624,8 +624,8 @@ async function changeTitle(remove) {
 
 #mintNowButton {
   margin-bottom: 100px;
-  height: 40px;
-  width: 400px;
+  height: 90px;
+  width: 500px;
   font-size: 32px;
   line-height: 40px;
   font-family: 'Major Mono Display', monospace;
@@ -954,6 +954,22 @@ async function changeTitle(remove) {
 
   #marketplaces {
     flex-direction: column;
+  }
+
+  #loadingMessage {
+    width: 100%;
+  }
+
+  .message {
+    margin-bottom: 40px;
+  }
+
+  #mintNowButton {
+    margin-bottom: 100px;
+    height: 70px;
+    width: 90vw;
+    font-size: 20px;
+    line-height: 40px;
   }
 }
 </style>

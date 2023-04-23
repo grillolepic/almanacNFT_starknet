@@ -52,7 +52,7 @@ function isMobile() {
       ><span
         class="link noSelect"
         :class="{ selected: route.name?.includes('/gallery') }"
-        v-if="!isMobile() && almanacStore.enabled"
+        v-if="!isMobile()"
         >gallery</span
       ></router-link
     >
@@ -79,7 +79,7 @@ function isMobile() {
           >random mint</span
         ></router-link
       >
-      <router-link :to="'/gallery'" @click="showMenu(false)" v-if="almanacStore.enabled"
+      <router-link :to="'/gallery'" @click="showMenu(false)"
         ><span class="link in-menu" :class="{ selected: route.name == '/gallery' }"
           >gallery</span
         ></router-link
