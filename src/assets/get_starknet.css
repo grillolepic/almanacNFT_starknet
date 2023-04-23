@@ -1,0 +1,53 @@
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.sc5::-webkit-scrollbar {
+  width: 15px;
+  height: 15px;
+}
+.sc5::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.sc5::-webkit-scrollbar-thumb {
+  background-image: linear-gradient(45deg, #4568dc, #b06ab3);
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 3px 13px 1px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.12) 0 3px 13px 1px;
+}
+
+.s-dialog__content {
+  border-radius: 30px !important;
+}
+
+.s-card {
+  background: #181821 !important;
+  border-radius: 30px !important;
+}
+
+.s-list-item {
+  background-color: #181821 !important;
+  border: none !important;
+  border-radius: 35px;
+}
+
+.s-ripple-container:hover {
+  background: #32234b !important;
+  border-radius: 10px !important;
+}
+
+.s-list-item__content {
+  background-color: transparent !important;
+}
+
+.s-list-item__title {
+  font-family: 'Major Mono Display', monospace !important;
+  text-transform: lowercase !important;
+}

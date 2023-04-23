@@ -1,199 +1,65 @@
 <script setup>
 import moment from 'moment'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useStarknetStore } from '@/store/starknet'
 import { useAlmanacStore } from '@/store/almanac'
 const starknetStore = useStarknetStore()
 const almanacStore = useAlmanacStore()
 
 const selectOpen = ref(false)
-const selectType = ref('market')
-const selectTitle = ref('Choose the Market for your Almanac')
-const selectOptions = ref([])
+const selectOptions = ref([{ id: 0, name: 'any market', image: '' }])
+
+if (selectOptions.value.length == 1 && almanacStore.markets.length > 0) {
+  let options = [...almanacStore.markets]
+  options.splice(0, 0, { id: 0, name: 'any market', image: '' })
+  selectOptions.value = options
+}
+
+onMounted(() => {
+  almanacStore.randomize(0)
+})
 
 function resetUI() {
   starknetStore.resetTransaction()
 }
 
-function showSelect(visible, section = 'market') {
-  if (!almanacStore.queryingDataAvailable || !visible || almanacStore.waitingInput) {
+function showSelect(visible) {
+  if (selectOptions.value.length == 1) {
+    let options = [...almanacStore.markets]
+    options.splice(0, 0, { id: 0, name: 'any market', image: '' })
+    selectOptions.value = options
+  }
+
+  if (!almanacStore.findingRandom || !visible) {
     selectOpen.value = visible
-    if (visible) {
-      almanacStore.resetDelay()
-      selectType.value = section
-
-      if (section == 'market') {
-        selectTitle.value = 'Choose the Market for your Almanac'
-        selectOptions.value = almanacStore.markets
-      } else {
-        let currentDate = moment.utc().subtract(1, 'day')
-        let startingDate = moment.utc(almanacStore.startDate)
-        let selectedDate = moment
-          .utc(almanacStore.startDate)
-          .add(almanacStore.almanacInput.daysSince, 'day')
-        selectOptions.value = []
-
-        let minDate = moment.utc(almanacStore.markets[almanacStore.almanacInput.market].minDate)
-
-        if (section == 'day') {
-          selectTitle.value = 'Choose the day of the month'
-          let minDay = 1
-          let maxDay = selectedDate.daysInMonth()
-
-          if (
-            currentDate.year() == selectedDate.year() &&
-            currentDate.month() == selectedDate.month()
-          ) {
-            maxDay = currentDate.get('date')
-          }
-
-          if (minDate.year() == selectedDate.year() && minDate.month() == selectedDate.month()) {
-            minDay = minDate.get('date')
-          }
-
-          for (let i = minDay; i <= maxDay; i++) {
-            selectOptions.value.push({
-              name: i > 9 ? i.toString() : `0${i.toString()}`
-            })
-          }
-        } else if (section == 'month') {
-          selectTitle.value = 'Choose the month'
-          let minMonth = 0
-          let maxMonth = 12
-
-          if (currentDate.year() == selectedDate.year()) {
-            maxMonth = currentDate.month() + 1
-          }
-          if (minDate.year() == selectedDate.year()) {
-            minMonth = minDate.month()
-          }
-
-          for (let i = minMonth; i < maxMonth; i++) {
-            if (i == 0) {
-              selectOptions.value.push({ name: 'january', value: i })
-            } else if (i == 1) {
-              selectOptions.value.push({ name: 'february', value: i })
-            } else if (i == 2) {
-              selectOptions.value.push({ name: 'march', value: i })
-            } else if (i == 3) {
-              selectOptions.value.push({ name: 'april', value: i })
-            } else if (i == 4) {
-              selectOptions.value.push({ name: 'may', value: i })
-            } else if (i == 5) {
-              selectOptions.value.push({ name: 'june', value: i })
-            } else if (i == 6) {
-              selectOptions.value.push({ name: 'july', value: i })
-            } else if (i == 7) {
-              selectOptions.value.push({ name: 'august', value: i })
-            } else if (i == 8) {
-              selectOptions.value.push({ name: 'september', value: i })
-            } else if (i == 9) {
-              selectOptions.value.push({ name: 'october', value: i })
-            } else if (i == 10) {
-              selectOptions.value.push({ name: 'november', value: i })
-            } else if (i == 11) {
-              selectOptions.value.push({ name: 'december', value: i })
-            }
-          }
-        } else if (section == 'year') {
-          selectTitle.value = 'Choose the year'
-          for (let i = minDate.year(); i <= currentDate.year(); i++) {
-            selectOptions.value.push({ name: i.toString() })
-          }
-        }
-      }
-    } else {
-      almanacStore.setAlmanac({})
-    }
   }
 }
 
 function optionMarketIconStyle(index) {
-  return `background-image: url("${almanacStore.markets[index].image}")`
+  return `background-image: url("${selectOptions.value[index].image}")`
 }
 
 function isOptionSelected(index) {
-  if (selectType.value == 'market') {
-    return index == almanacStore.almanacInput.market
-  } else {
-    let currentDate = moment.utc().subtract(1, 'day')
-    let startingDate = moment.utc(almanacStore.startDate)
-    let selectedDate = moment
-      .utc(almanacStore.startDate)
-      .add(almanacStore.almanacInput.daysSince, 'day')
-
-    if (selectType.value == 'day') {
-      return index == selectedDate.date() - 1
-    } else if (selectType.value == 'month') {
-      return selectOptions.value[index].name == selectedDate.format('MMM').toLowerCase()
-    } else if (selectType.value == 'year') {
-      return selectOptions.value[index].name == selectedDate.year()
-    }
-  }
+  return index == almanacStore.randomMarket
 }
 
 function selectOption(index) {
-  let currentDate = moment.utc().subtract(1, 'day')
-  let startingDate = moment.utc(almanacStore.startDate)
-  let selectedDate = moment
-    .utc(almanacStore.startDate)
-    .add(almanacStore.almanacInput.daysSince, 'day')
-
-  if (selectType.value == 'market') {
-    let minDate = moment.utc(almanacStore.markets[index].minDate)
-
-    if (minDate.isAfter(selectedDate)) {
-      almanacStore.setAlmanac({
-        market: index,
-        daysSince: minDate.diff(startingDate, 'days') + 1
-      })
-    } else {
-      almanacStore.setAlmanac({
-        market: index
-      })
-    }
-  } else {
-    if (selectType.value == 'day') {
-      selectedDate.date(parseInt(selectOptions.value[index].name))
-    } else if (selectType.value == 'month') {
-      selectedDate.month(selectOptions.value[index].value)
-    } else if (selectType.value == 'year') {
-      selectedDate.year(selectOptions.value[index].name)
-    }
-
-    let minDate = moment.utc(almanacStore.markets[almanacStore.almanacInput.market].minDate)
-
-    if (selectedDate.isSameOrAfter(currentDate)) {
-      selectedDate = currentDate
-    }
-    if (selectedDate.isSameOrBefore(startingDate)) {
-      selectedDate = startingDate
-    }
-    if (selectedDate.isSameOrBefore(minDate)) {
-      selectedDate = minDate.add(1, 'days')
-    }
-
-    almanacStore.setAlmanac({
-      daysSince: selectedDate.diff(startingDate, 'days')
-    })
-  }
-
+  almanacStore.randomize(index)
   selectOpen.value = false
 }
 
+function redoRandom() {
+  almanacStore.randomize(almanacStore.randomMarket)
+}
+
 function mint() {
-  if (
-    almanacStore.almanacInput.nftAvailable &&
-    almanacStore.almanacInput.dataAvailable &&
-    !almanacStore.waitingInput &&
-    almanacStore.priceOk
-  ) {
+  if (almanacStore.priceOk) {
     almanacStore.mintAlmanac()
     window.scrollTo(0, 0)
   }
 }
 
-function printTxStatus(event) {
+function printTxStatus() {
   if (starknetStore.transaction.status == 0) {
     return 'Waiting for Wallet'
   }
@@ -213,35 +79,31 @@ function goToLink(link) {
   window.open(link)
 }
 
+const selectRandomMarketIconStyle = computed(() => {
+  if (almanacStore.randomMarket > 0) {
+    return `background-image: url("${almanacStore.markets[almanacStore.randomMarket - 1].image}")`
+  }
+  return ''
+})
+
 const selectMarketIconStyle = computed(() => {
   return `background-image: url("${almanacStore.markets[almanacStore.almanacInput.market].image}")`
 })
 
-const selectedDate = computed(() => {
-  let selectedDate = moment(almanacStore.startDate).add(almanacStore.almanacInput.daysSince, 'day')
-  let minDate = moment.utc(almanacStore.markets[almanacStore.almanacInput.market].minDate)
-  if (selectedDate.isBefore(minDate)) {
-    selectedDate = minDate
-  }
-  return selectedDate.get('date') > 9 ? selectedDate.get('date') : `0${selectedDate.get('date')}`
-})
+const randomDate = computed(() => {
+  if (almanacStore.almanacInput.daysSince > 0) {
+    let selectedDate = moment
+      .utc(almanacStore.startDate)
+      .add(almanacStore.almanacInput.daysSince, 'day')
 
-const selectedMonth = computed(() => {
-  let selectedDate = moment(almanacStore.startDate).add(almanacStore.almanacInput.daysSince, 'day')
-  let minDate = moment.utc(almanacStore.markets[almanacStore.almanacInput.market].minDate)
-  if (selectedDate.isBefore(minDate)) {
-    selectedDate = minDate
-  }
-  return selectedDate.format('MMM').toLowerCase()
-})
+    let day = selectedDate.date()
+    let month = selectedDate.format('MMMM')
+    let year = selectedDate.year()
 
-const selectedYear = computed(() => {
-  let selectedDate = moment(almanacStore.startDate).add(almanacStore.almanacInput.daysSince, 'day')
-  let minDate = moment.utc(almanacStore.markets[almanacStore.almanacInput.market].minDate)
-  if (selectedDate.isBefore(minDate)) {
-    selectedDate = minDate
+    return `${day} of ${month}, ${year}`
   }
-  return selectedDate.get('year').toString()
+
+  return ''
 })
 </script>
 
@@ -249,7 +111,7 @@ const selectedYear = computed(() => {
   <div id="selectContainer" :class="{ 'show-select-bg': selectOpen }" @click="showSelect(false)">
     <div id="optionsContainer" :class="{ 'hide-options': !selectOpen }">
       <div id="optionsBg">
-        <div id="optionsTitle" class="label">{{ selectTitle }}:</div>
+        <div id="optionsTitle" class="label">Choose the Market for your Almanac:</div>
         <div id="optionsScroller" class="sc5">
           <div
             class="optionsOption"
@@ -258,11 +120,7 @@ const selectedYear = computed(() => {
             @click="selectOption(index)"
             :class="{ selectedOption: isOptionSelected(index) }"
           >
-            <div
-              id="marketIcon"
-              v-if="selectType == 'market'"
-              :style="optionMarketIconStyle(index)"
-            ></div>
+            <div id="marketIcon" v-if="index > 0" :style="optionMarketIconStyle(index)"></div>
             <span>{{ selectOptions[index].name }}</span>
           </div>
         </div>
@@ -271,7 +129,7 @@ const selectedYear = computed(() => {
   </div>
 
   <div class="viewContainer">
-    <div id="title" class="noSelect">mint</div>
+    <div id="title" class="noSelect"><span class="smaller_title">random</span><br />mint</div>
     <div
       v-if="
         starknetStore.connected &&
@@ -295,98 +153,36 @@ const selectedYear = computed(() => {
         <div v-else>
           <div id="almanacConfig" v-if="starknetStore.transaction.status == null">
             <div id="instructions" class="noSelect">
-              Choose the market and the date of your Almanac NFT
+              ¿Can't find an available Almanac or just feeling lucky?<br />Mint a random Almanac
+              NFT!
             </div>
 
-            <div class="label noSelect">Market</div>
-            <div
-              id="MarketSelect"
-              class="comboBox noSelect"
-              :class="{
-                'disabled-btn': almanacStore.queryingDataAvailable && !almanacStore.waitingInput
-              }"
-              @click="showSelect(true, 'market')"
-            >
+            <div class="flex flex-center max-width" :class="{ row: false, column: true }">
+              <div class="label noSelect market-label">Market:</div>
+              <div
+                id="MarketSelect"
+                class="comboBox noSelect"
+                :class="{
+                  'disabled-btn': almanacStore.findingRandom
+                }"
+                @click="showSelect(true)"
+              >
+                <div
+                  id="marketIcon"
+                  v-if="almanacStore.randomMarket > 0"
+                  class="noSelect"
+                  :style="selectRandomMarketIconStyle"
+                ></div>
+                <span class="noSelect">{{ selectOptions[almanacStore.randomMarket].name }}</span>
+              </div>
+            </div>
+
+            <div v-if="!almanacStore.findingRandom" class="randomized flex flex-center row">
               <div id="marketIcon" class="noSelect" :style="selectMarketIconStyle"></div>
-              <span class="noSelect">{{
-                almanacStore.markets[almanacStore.almanacInput.market].name
-              }}</span>
+              <div class="label-big noSelect">{{ randomDate }}</div>
+              <div class="redo containNoRepeatCenter" @click="redoRandom()"></div>
             </div>
-
-            <div class="separator"></div>
-
-            <div id="DateSelect">
-              <div class="datePart">
-                <div class="dateLabel noSelect">Day</div>
-                <div
-                  id="daySelect"
-                  class="comboBox noSelect"
-                  :class="{
-                    'disabled-btn': almanacStore.queryingDataAvailable && !almanacStore.waitingInput
-                  }"
-                  @click="showSelect(true, 'day')"
-                >
-                  <span>{{ selectedDate }}</span>
-                </div>
-              </div>
-              <div class="datePart">
-                <div class="dateLabel noSelect">Month</div>
-                <div
-                  id="monthSelect"
-                  class="comboBox noSelect"
-                  :class="{
-                    'disabled-btn': almanacStore.queryingDataAvailable && !almanacStore.waitingInput
-                  }"
-                  @click="showSelect(true, 'month')"
-                >
-                  <span>{{ selectedMonth }}</span>
-                </div>
-              </div>
-              <div class="datePart">
-                <div class="dateLabel noSelect">Year</div>
-                <div
-                  id="yearSelect"
-                  class="comboBox noSelect"
-                  :class="{
-                    'disabled-btn': almanacStore.queryingDataAvailable && !almanacStore.waitingInput
-                  }"
-                  @click="showSelect(true, 'year')"
-                >
-                  <span>{{ selectedYear }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="separator"></div>
-
-            <div class="checker">
-              <div
-                class="checkerStatus"
-                :class="{
-                  unavailable:
-                    !almanacStore.queryingNftAvailable &&
-                    !almanacStore.almanacInput.nftAvailable &&
-                    !almanacStore.waitingInput,
-                  querying: almanacStore.queryingNftAvailable && !almanacStore.waitingInput,
-                  waiting: almanacStore.waitingInput
-                }"
-              ></div>
-              <div class="checkerInfo noSelect">nft available</div>
-            </div>
-            <div class="checker">
-              <div
-                class="checkerStatus"
-                :class="{
-                  unavailable:
-                    !almanacStore.queryingDataAvailable &&
-                    !almanacStore.almanacInput.dataAvailable &&
-                    !almanacStore.waitingInput,
-                  querying: almanacStore.queryingDataAvailable && !almanacStore.waitingInput,
-                  waiting: almanacStore.waitingInput
-                }"
-              ></div>
-              <div class="checkerInfo noSelect">data available</div>
-            </div>
+            <div class="inline-spinner" v-if="almanacStore.findingRandom"></div>
 
             <div
               id="mintButton"
@@ -395,12 +191,10 @@ const selectedYear = computed(() => {
                 'green-btn':
                   almanacStore.almanacInput.dataAvailable &&
                   almanacStore.almanacInput.nftAvailable &&
-                  !almanacStore.waitingInput &&
                   almanacStore.priceOk,
                 'disabled-btn':
                   !almanacStore.almanacInput.dataAvailable ||
                   !almanacStore.almanacInput.nftAvailable ||
-                  almanacStore.waitingInput ||
                   !almanacStore.priceOk
               }"
               @click="mint"
@@ -412,7 +206,7 @@ const selectedYear = computed(() => {
               <span
                 v-if="
                   !almanacStore.almanacInput.dataAvailable &&
-                  !almanacStore.queryingDataAvailable &&
+                  !almanacStore.findingRandom &&
                   !almanacStore.queryingNftAvailable
                 "
                 class="noSelect"
@@ -423,7 +217,7 @@ const selectedYear = computed(() => {
                   v-if="
                     !almanacStore.almanacInput.nftAvailable &&
                     !almanacStore.queryingNftAvailable &&
-                    !almanacStore.queryingDataAvailable
+                    !almanacStore.findingRandom
                   "
                   class="noSelect"
                   >it seems like the nft for this market and day has already been minted</span
@@ -518,6 +312,35 @@ const selectedYear = computed(() => {
 </template>
 
 <style scoped>
+.redo {
+  width: 30px;
+  height: 30px;
+  border-radius: 25px;
+  margin-left: 15px;
+  background-image: url('/img/reload.svg');
+  transition-duration: 200ms;
+}
+
+.redo:hover {
+  -webkit-filter: drop-shadow(0px 0px 2px rgba(255, 255, 255, 0.7));
+  filter: drop-shadow(0px 0px 2px rgba(255, 255, 255, 0.7));
+  cursor: pointer;
+  transform: rotate(360deg);
+}
+
+.market-label {
+  line-height: 88px;
+  margin-right: 15px;
+}
+
+#title {
+  line-height: 75px;
+  margin-bottom: 45px;
+}
+.smaller_title {
+  font-size: 50px;
+}
+
 #title {
   position: relative;
   left: 12px;
@@ -528,7 +351,7 @@ const selectedYear = computed(() => {
   font-family: 'Gemunu Libre', sans-serif;
   font-size: 28px;
   letter-spacing: 1px;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -547,6 +370,11 @@ const selectedYear = computed(() => {
   font-family: 'Gemunu Libre', sans-serif;
   font-size: 28px;
   letter-spacing: 1px;
+}
+
+.label-big {
+  color: white;
+  font-size: 36px;
 }
 
 .comboBox {
@@ -593,8 +421,9 @@ const selectedYear = computed(() => {
 }
 
 #MarketSelect {
-  width: 520px;
+  width: 350px;
   margin-top: 0.8rem;
+  margin-bottom: 1.6rem;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -848,9 +677,19 @@ const selectedYear = computed(() => {
     font-size: 24px;
   }
 
+  .label-big {
+    color: white;
+    font-size: 24px;
+  }
+
   #MarketSelect {
     width: 90%;
     margin-top: 5px;
+  }
+
+  .market-label {
+    line-height: 40px;
+    margin-right: 0px;
   }
 
   #marketIcon {
@@ -865,21 +704,20 @@ const selectedYear = computed(() => {
   #DateSelect {
     margin-top: 0px;
     margin-bottom: 10px;
-    width: 100%;
-    margin-right: 0px;
+    width: 250px;
     flex-direction: column;
   }
 
   #daySelect {
-    width: 90%;
+    width: 250px;
   }
 
   #monthSelect {
-    width: 90%;
+    width: 250px;
   }
 
   #yearSelect {
-    width: 90%;
+    width: 250px;
   }
 
   .dateLabel {
