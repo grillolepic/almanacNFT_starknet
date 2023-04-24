@@ -554,7 +554,7 @@ async function changeTitle(remove) {
 }
 
 #removeTitleButton {
-  height: 30px;
+  height: 60px;
   width: 300px;
   font-size: 20px;
   line-height: 30px;
