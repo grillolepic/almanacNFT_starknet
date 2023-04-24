@@ -181,9 +181,10 @@ const randomDate = computed(() => {
             </div>
 
             <div v-if="!almanacStore.findingRandom" class="randomized flex flex-center row">
-
               <div id="marketIcon" class="noSelect" :style="selectMarketIconStyle"></div>
-              <div class="label-big noSelect" v-if="!almanacStore.randomNotFound">{{ randomDate }}</div>
+              <div class="label-big noSelect" v-if="!almanacStore.randomNotFound">
+                {{ randomDate }}
+              </div>
               <div class="label-big noSelect" v-else>None found. Try again.</div>
 
               <div class="redo containNoRepeatCenter" @click="redoRandom()"></div>

@@ -186,7 +186,8 @@ export const useStarknetStore = defineStore('starknet', {
 
     async signMessage(signableMessage) {
       console.log("starknet: signMessage()");
-      await _starknet.account.signMessage(signableMessage);
+      let signature = await _starknet.account.signMessage(signableMessage);
+      return signature;
     },
 
     handleAccountsChanged(accounts) {
