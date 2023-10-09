@@ -74,10 +74,10 @@ function getMarketText(number) {
       >
 
       <div id="tradeOn" v-if="almanacStore.enabled">
-        <div class="tradeOnText noSelect">trade on</div>
+        <div class="tradeOnText noSelect">trade on:</div>
         <a :href="`${almanacStore.aspectUri}`"><div class="aspectLogo"></div></a>
-        <div class="tradeOnText noSelect" v-if="!isMobile">and</div>
-        <a :href="`${almanacStore.mintsquareUri}/nfts`"><div class="mintSquareLogo"></div></a>
+        <a :href="`${almanacStore.flexUri}`"><div class="flexLogo"></div></a>
+        <a :href="`${almanacStore.unframedUri}`"><div class="unframedLogo"></div></a>
       </div>
     </div>
 
@@ -431,6 +431,7 @@ function getMarketText(number) {
 }
 
 .aspectLogo {
+  margin: 10px;
   width: 130px;
   height: 50px;
   background-repeat: no-repeat;
@@ -439,11 +440,30 @@ function getMarketText(number) {
 }
 
 .mintSquareLogo {
+  margin: 10px;
   width: 217px;
   height: 50px;
   background-repeat: no-repeat;
   background-size: contain;
   background-image: url('/img/mintSquare.png');
+}
+
+.flexLogo {
+  margin: 10px;
+  width: 100px;
+  height: 70px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url('/img/flex.png');
+}
+
+.unframedLogo {
+  margin: 10px;
+  width: 140px;
+  height: 50px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url('/img/unframed.png');
 }
 
 #secondSection {

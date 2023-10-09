@@ -376,9 +376,11 @@ async function changeTitle(remove) {
                     <a :href="`${almanacStore.aspectUri}/${almanacStore.selectedAlmanac.id}`"
                       ><div class="aspectLogo"></div
                     ></a>
-                    <div class="tradeOnText noSelect">or</div>
-                    <a :href="`${almanacStore.mintsquareUri}/${almanacStore.selectedAlmanac.id}`"
-                      ><div class="mintSquareLogo"></div
+                    <a :href="`${almanacStore.flexAssetUri}/${almanacStore.selectedAlmanac.id}`"
+                      ><div class="flexLogo"></div
+                    ></a>
+                    <a :href="`${almanacStore.unframedAssetUri}/${almanacStore.selectedAlmanac.id}`"
+                      ><div class="unframedLogo"></div
                     ></a>
                   </div>
                 </div>
@@ -835,6 +837,7 @@ async function changeTitle(remove) {
 }
 
 .aspectLogo {
+  margin: 10px;
   width: 130px;
   height: 50px;
   background-repeat: no-repeat;
@@ -843,11 +846,30 @@ async function changeTitle(remove) {
 }
 
 .mintSquareLogo {
+  margin: 10px;
   width: 217px;
   height: 50px;
   background-repeat: no-repeat;
   background-size: contain;
   background-image: url('/img/mintSquare.png');
+}
+
+.flexLogo {
+  margin: 10px;
+  width: 100px;
+  height: 70px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url('/img/flex.png');
+}
+
+.unframedLogo {
+  margin: 10px;
+  width: 140px;
+  height: 50px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url('/img/unframed.png');
 }
 
 #tradeOn2 {

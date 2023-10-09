@@ -93,8 +93,8 @@ export const useStarknetStore = defineStore('starknet', {
       if (_starknet?.isConnected) {
         console.log('starknet: login()')
 
-        let address = validateAndParseAddress(_starknet.selectedAddress)
-        let { chainId } = _starknet.provider
+        let address = validateAndParseAddress(_starknet.selectedAddress);
+        let chainId = await _starknet.provider.getChainId();
         let network_name = networkName[chainId]
         let network_ok = supportedChainIds.includes(chainId)
 
@@ -203,7 +203,7 @@ export const useStarknetStore = defineStore('starknet', {
       this.initialized = true
       _etherContract = null
       _starknet = null
-      disconnect()
+      disconnect({ clearLastWallet: true });
       _almanacStore.loggedOff()
       localStorage.setItem('wasConnected', false)
     }

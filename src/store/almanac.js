@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Contract, uint256, validateAndParseAddress, CallData, hash, num } from "starknet";
 import { defineStore } from 'pinia';
 import moment from 'moment';
-import { serverNetworkTag, ownerAddress, almanacAddress, etherAddress } from '@/helpers/blockchainConstants';
+import { serverNetworkTag, ownerAddress, almanacAddress, etherAddress, defaultChainId } from '@/helpers/blockchainConstants';
 import almanacMainnetAbi from '../assets/abis/almanac_mainnet.json' assert {type: 'json'};
 import almanacTestnetAbi from '../assets/abis/almanac_testnet.json' assert {type: 'json'};
 import argentAccountAbi from '../assets/abis/argent_account.json' assert {type: 'json'};
@@ -80,16 +80,44 @@ export const useAlmanacStore = defineStore('almanac', {
     getters: {
         aspectUri: () => {
             if (_starknetStore.isStarknetTestnet) {
-                return `https://aspect.co/asset/${almanacAddress[_starknetStore.chainId]}`;
+                return `https://aspect.co/asset/${almanacAddress[_starknetStore.chainId] ?? almanacAddress[defaultChainId]}`;
             } else {
-                return `https://aspect.co/asset/${almanacAddress[_starknetStore.chainId]}`;
+                return `https://aspect.co/asset/${almanacAddress[_starknetStore.chainId] ?? almanacAddress[defaultChainId]}`;
             }
         },
         mintsquareUri: () => {
             if (_starknetStore.isStarknetTestnet) {
-                return `https://mintsquare.io/asset/starknet-testnet/${almanacAddress[_starknetStore.chainId]}`;
+                return `https://mintsquare.io/asset/starknet-testnet/${almanacAddress[_starknetStore.chainId] ?? almanacAddress[defaultChainId]}`;
             } else {
-                return `https://mintsquare.io/asset/starknet/${almanacAddress[_starknetStore.chainId]}`;
+                return `https://mintsquare.io/asset/starknet/${almanacAddress[_starknetStore.chainId] ?? almanacAddress[defaultChainId]}`;
+            }
+        },
+        unframedUri: () => {
+            if (_starknetStore.isStarknetTestnet) {
+                return ``;
+            } else {
+                return `https://unframed.co/collection/${almanacAddress[_starknetStore.chainId] ?? almanacAddress[defaultChainId]}`;
+            }
+        },
+        unframedAssetUri: () => {
+            if (_starknetStore.isStarknetTestnet) {
+                return ``;
+            } else {
+                return `https://unframed.co/item/${almanacAddress[_starknetStore.chainId] ?? almanacAddress[defaultChainId]}`;
+            }
+        },
+        flexUri: () => {
+            if (_starknetStore.isStarknetTestnet) {
+                return ``;
+            } else {
+                return `https://flexing.gg/starknet/collection/${almanacAddress[_starknetStore.chainId] ?? almanacAddress[defaultChainId]}`;
+            }
+        },
+        flexAssetUri: () => {
+            if (_starknetStore.isStarknetTestnet) {
+                return ``;
+            } else {
+                return `https://flexing.gg/starknet/asset/${almanacAddress[_starknetStore.chainId] ?? almanacAddress[defaultChainId]}`;
             }
         }
     },
@@ -333,21 +361,12 @@ export const useAlmanacStore = defineStore('almanac', {
                         this.selectedAlmanac.userOwned = true;
                         this.selectedAlmanac.owner = _starknetStore.address;
                     } else {
-                        try {
-                            let aspectDomain = _starknetStore.isStarknetTestnet ? 'https://api-testnet.aspect.co' : 'https://api.aspect.co';
-                            let almanacsReq = await axios.get(`${aspectDomain}/api/v0/asset/${almanacAddress[_starknetStore.currentOrDefaultChainId]}/${id}`);
-
-                            if (almanacsReq.data.owner?.account_address != undefined) {
-                                this.selectedAlmanac.owner = validateAndParseAddress(almanacsReq.data.owner.account_address);
-                            }
-                        } catch (err) {
-                            if (_starknetStore.isStarknetConnected && _almanacContract != null) {
-                                let response = await _almanacContract.ownerOf(uint256.bnToUint256(id));
-                                let owner = validateAndParseAddress(response.owner);
-                                this.selectedAlmanac.owner = owner;
-                                if (owner == _starknetStore.address) {
-                                    this.selectedAlmanac.userOwned = true;
-                                }
+                        if (_starknetStore.isStarknetConnected && _almanacContract != null) {
+                            let response = await _almanacContract.ownerOf(uint256.bnToUint256(id));
+                            let owner = validateAndParseAddress(response.owner);
+                            this.selectedAlmanac.owner = owner;
+                            if (owner == _starknetStore.address) {
+                                this.selectedAlmanac.userOwned = true;
                             }
                         }
                     }
