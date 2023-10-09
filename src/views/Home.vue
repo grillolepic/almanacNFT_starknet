@@ -75,7 +75,6 @@ function getMarketText(number) {
 
       <div id="tradeOn" v-if="almanacStore.enabled">
         <div class="tradeOnText noSelect">trade on:</div>
-        <a :href="`${almanacStore.aspectUri}`"><div class="aspectLogo"></div></a>
         <a :href="`${almanacStore.flexUri}`"><div class="flexLogo"></div></a>
         <a :href="`${almanacStore.unframedUri}`"><div class="unframedLogo"></div></a>
       </div>

@@ -373,9 +373,6 @@ async function changeTitle(remove) {
                 <div id="tradeOn">
                   <div class="tradeOnText noSelect">view on:</div>
                   <div id="marketplaces">
-                    <a :href="`${almanacStore.aspectUri}/${almanacStore.selectedAlmanac.id}`"
-                      ><div class="aspectLogo"></div
-                    ></a>
                     <a :href="`${almanacStore.flexAssetUri}/${almanacStore.selectedAlmanac.id}`"
                       ><div class="flexLogo"></div
                     ></a>
